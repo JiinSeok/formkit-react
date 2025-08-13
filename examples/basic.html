@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FormKit React - Basic Example</title>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        :root {
+            --border: 214.3 31.8% 91.4%;
+            --input: 214.3 31.8% 91.4%;
+            --ring: 222.2 84% 4.9%;
+            --background: 0 0% 100%;
+            --foreground: 222.2 84% 4.9%;
+            --primary: 222.2 47.4% 11.2%;
+            --primary-foreground: 210 40% 98%;
+            --secondary: 210 40% 96.1%;
+            --secondary-foreground: 222.2 47.4% 11.2%;
+            --destructive: 0 84.2% 60.2%;
+            --destructive-foreground: 210 40% 98%;
+            --muted: 210 40% 96.1%;
+            --muted-foreground: 215.4 16.3% 46.9%;
+            --accent: 210 40% 96.1%;
+            --accent-foreground: 222.2 47.4% 11.2%;
+            --popover: 0 0% 100%;
+            --popover-foreground: 222.2 84% 4.9%;
+        }
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            padding: 2rem;
+            max-width: 600px;
+            margin: 0 auto;
+            background: hsl(var(--background));
+            color: hsl(var(--foreground));
+        }
+        .container {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        h1 {
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        .result {
+            margin-top: 2rem;
+            padding: 1rem;
+            background: hsl(var(--muted));
+            border-radius: 4px;
+        }
+        pre {
+            margin: 0;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>FormKit React Examples</h1>
+        <div id="root"></div>
+        <div id="result" class="result" style="display: none;">
+            <h3>Submitted Data:</h3>
+            <pre id="result-data"></pre>
+        </div>
+    </div>
+
+    <script type="text/babel">
+        // Mock FormKit components for demonstration
+        const FormKit = {
+            Root: ({ formId, onSubmit, children }) => (
+                <form id={formId} onSubmit={(e) => {
+                    e.preventDefault();
+                    const formData = new FormData(e.target);
+                    const data = Object.fromEntries(formData);
+                    onSubmit(data);
+                }}>
+                    {children}
+                </form>
+            ),
+            Title: ({ children }) => <h2 style={{ textAlign: 'center', marginBottom: '1.5rem' }}>{children}</h2>,
+            Field: ({ children }) => <div style={{ marginBottom: '1rem' }}>{children}</div>,
+            Label: ({ children }) => <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>{children}</label>,
+            Input: ({ name, type = 'text', required, placeholder }) => (
+                <input
+                    name={name}
+                    type={type}
+                    required={required}
+                    placeholder={placeholder}
+                    style={{
+                        width: '100%',
+                        padding: '0.5rem',
+                        border: '1px solid hsl(var(--border))',
+                        borderRadius: '4px',
+                        fontSize: '14px'
+                    }}
+                />
+            ),
+            Textarea: ({ name, placeholder, required }) => (
+                <textarea
+                    name={name}
+                    placeholder={placeholder}
+                    required={required}
+                    rows={4}
+                    style={{
+                        width: '100%',
+                        padding: '0.5rem',
+                        border: '1px solid hsl(var(--border))',
+                        borderRadius: '4px',
+                        fontSize: '14px',
+                        resize: 'none'
+                    }}
+                />
+            ),
+            Select: ({ name, options, placeholder, required }) => (
+                <select
+                    name={name}
+                    required={required}
+                    style={{
+                        width: '100%',
+                        padding: '0.5rem',
+                        border: '1px solid hsl(var(--border))',
+                        borderRadius: '4px',
+                        fontSize: '14px',
+                        background: 'white'
+                    }}
+                >
+                    <option value="">{placeholder}</option>
+                    {options.map(opt => (
+                        <option key={opt.value} value={opt.value}>{opt.label}</option>
+                    ))}
+                </select>
+            ),
+            SubmitButton: ({ children }) => (
+                <button
+                    type="submit"
+                    style={{
+                        width: '100%',
+                        padding: '0.75rem',
+                        background: 'hsl(var(--primary))',
+                        color: 'hsl(var(--primary-foreground))',
+                        border: 'none',
+                        borderRadius: '4px',
+                        fontSize: '16px',
+                        fontWeight: '500',
+                        cursor: 'pointer',
+                        marginTop: '1rem'
+                    }}
+                >
+                    {children}
+                </button>
+            ),
+            Fieldset: ({ children }) => (
+                <fieldset style={{ border: 'none', padding: 0, margin: '1.5rem 0' }}>
+                    {children}
+                </fieldset>
+            ),
+            Legend: ({ children, required }) => (
+                <legend style={{ fontSize: '18px', fontWeight: '600', marginBottom: '1rem' }}>
+                    {children} {required && <span style={{ color: 'hsl(var(--destructive))' }}>*</span>}
+                </legend>
+            )
+        };
+
+        function App() {
+            const [currentExample, setCurrentExample] = React.useState('login');
+
+            const handleSubmit = (data) => {
+                console.log('Form submitted:', data);
+                document.getElementById('result').style.display = 'block';
+                document.getElementById('result-data').textContent = JSON.stringify(data, null, 2);
+            };
+
+            const countries = [
+                { value: 'us', label: 'United States' },
+                { value: 'uk', label: 'United Kingdom' },
+                { value: 'ca', label: 'Canada' },
+                { value: 'kr', label: 'South Korea' },
+                { value: 'jp', label: 'Japan' },
+            ];
+
+            const departments = [
+                { value: 'engineering', label: 'Engineering' },
+                { value: 'design', label: 'Design' },
+                { value: 'marketing', label: 'Marketing' },
+                { value: 'sales', label: 'Sales' },
+                { value: 'hr', label: 'Human Resources' },
+            ];
+
+            return (
+                <div>
+                    <div style={{ marginBottom: '2rem', textAlign: 'center' }}>
+                        <button onClick={() => setCurrentExample('login')} style={{ margin: '0 0.5rem' }}>Login Form</button>
+                        <button onClick={() => setCurrentExample('register')} style={{ margin: '0 0.5rem' }}>Registration Form</button>
+                        <button onClick={() => setCurrentExample('contact')} style={{ margin: '0 0.5rem' }}>Contact Form</button>
+                    </div>
+
+                    {currentExample === 'login' && (
+                        <FormKit.Root formId="login" onSubmit={handleSubmit}>
+                            <FormKit.Title>Login</FormKit.Title>
+                            
+                            <FormKit.Field>
+                                <FormKit.Label>Email</FormKit.Label>
+                                <FormKit.Input name="email" type="email" placeholder="Enter your email" required />
+                            </FormKit.Field>
+                            
+                            <FormKit.Field>
+                                <FormKit.Label>Password</FormKit.Label>
+                                <FormKit.Input name="password" type="password" placeholder="Enter your password" required />
+                            </FormKit.Field>
+                            
+                            <FormKit.SubmitButton>Sign In</FormKit.SubmitButton>
+                        </FormKit.Root>
+                    )}
+
+                    {currentExample === 'register' && (
+                        <FormKit.Root formId="register" onSubmit={handleSubmit}>
+                            <FormKit.Title>Create Account</FormKit.Title>
+                            
+                            <FormKit.Fieldset>
+                                <FormKit.Legend required>Personal Information</FormKit.Legend>
+                                
+                                <FormKit.Field>
+                                    <FormKit.Label>Full Name</FormKit.Label>
+                                    <FormKit.Input name="fullName" placeholder="John Doe" required />
+                                </FormKit.Field>
+                                
+                                <FormKit.Field>
+                                    <FormKit.Label>Email</FormKit.Label>
+                                    <FormKit.Input name="email" type="email" placeholder="john@example.com" required />
+                                </FormKit.Field>
+                                
+                                <FormKit.Field>
+                                    <FormKit.Label>Country</FormKit.Label>
+                                    <FormKit.Select 
+                                        name="country" 
+                                        options={countries}
+                                        placeholder="Select your country"
+                                        required
+                                    />
+                                </FormKit.Field>
+                            </FormKit.Fieldset>
+                            
+                            <FormKit.Fieldset>
+                                <FormKit.Legend>Account Settings</FormKit.Legend>
+                                
+                                <FormKit.Field>
+                                    <FormKit.Label>Password</FormKit.Label>
+                                    <FormKit.Input name="password" type="password" required />
+                                </FormKit.Field>
+                                
+                                <FormKit.Field>
+                                    <FormKit.Label>Confirm Password</FormKit.Label>
+                                    <FormKit.Input name="confirmPassword" type="password" required />
+                                </FormKit.Field>
+                            </FormKit.Fieldset>
+                            
+                            <FormKit.SubmitButton>Create Account</FormKit.SubmitButton>
+                        </FormKit.Root>
+                    )}
+
+                    {currentExample === 'contact' && (
+                        <FormKit.Root formId="contact" onSubmit={handleSubmit}>
+                            <FormKit.Title>Contact Us</FormKit.Title>
+                            
+                            <FormKit.Field>
+                                <FormKit.Label>Name</FormKit.Label>
+                                <FormKit.Input name="name" placeholder="Your name" required />
+                            </FormKit.Field>
+                            
+                            <FormKit.Field>
+                                <FormKit.Label>Email</FormKit.Label>
+                                <FormKit.Input name="email" type="email" placeholder="your@email.com" required />
+                            </FormKit.Field>
+                            
+                            <FormKit.Field>
+                                <FormKit.Label>Department</FormKit.Label>
+                                <FormKit.Select 
+                                    name="department" 
+                                    options={departments}
+                                    placeholder="Select department"
+                                    required
+                                />
+                            </FormKit.Field>
+                            
+                            <FormKit.Field>
+                                <FormKit.Label>Message</FormKit.Label>
+                                <FormKit.Textarea 
+                                    name="message" 
+                                    placeholder="How can we help you?"
+                                    required
+                                />
+                            </FormKit.Field>
+                            
+                            <FormKit.SubmitButton>Send Message</FormKit.SubmitButton>
+                        </FormKit.Root>
+                    )}
+                </div>
+            );
+        }
+
+        ReactDOM.render(<App />, document.getElementById('root'));
+    </script>
+</body>
+</html>
