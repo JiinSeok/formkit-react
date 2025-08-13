@@ -1,28 +1,30 @@
 # @jiin.seok/formkit-react
 
-🚀 A powerful React form library with Compound Component Pattern, built-in validation, and TypeScript support
+🚀 Compound Component Pattern과 내장 검증, TypeScript 지원을 갖춘 강력한 React 폼 라이브러리
 
 [![npm version](https://img.shields.io/npm/v/@jiin.seok/formkit-react.svg)](https://www.npmjs.com/package/@jiin.seok/formkit-react)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-## ✨ Features
+[English Documentation](./README-EN.md)
 
-- 🎯 **Compound Component Pattern** - Clean, composable API
-- 🔄 **React Hook Form Integration** - Performance optimized
-- 🛡️ **Zod Schema Support** - Type-safe validation
-- ♿ **Accessibility First** - ARIA compliant
-- 🎨 **Tailwind CSS Styled** - Beautiful by default
-- 📝 **TypeScript** - Full type safety
-- 🔒 **Password Toggle** - Built-in visibility toggle
-- 🎛️ **Select Component** - Powered by Radix UI
+## ✨ 주요 기능
 
-## 📦 Installation
+- 🎯 **Compound Component Pattern** - 깔끔하고 조합 가능한 API
+- 🔄 **React Hook Form 통합** - 성능 최적화
+- 🛡️ **Zod 스키마 지원** - 타입 안전 검증
+- ♿ **접근성 우선** - ARIA 준수
+- 🎨 **Tailwind CSS 스타일링** - 기본적으로 아름다운 디자인
+- 📝 **TypeScript** - 완전한 타입 안정성
+- 🔒 **비밀번호 토글** - 내장 가시성 토글
+- 🎛️ **Select 컴포넌트** - Radix UI 기반
+
+## 📦 설치
 
 ```bash
 npm install @jiin.seok/formkit-react
-# or
+# 또는
 yarn add @jiin.seok/formkit-react
-# or
+# 또는
 pnpm add @jiin.seok/formkit-react
 ```
 
@@ -30,56 +32,56 @@ pnpm add @jiin.seok/formkit-react
 
 ```bash
 npm install react react-dom react-hook-form
-# Optional for Zod validation
+# Zod 검증을 위한 선택적 설치
 npm install zod @hookform/resolvers
 ```
 
-## 🚀 Quick Start
+## 🚀 빠른 시작
 
-### Basic Example
+### 기본 예제
 
 ```tsx
 import FormKit from '@jiin.seok/formkit-react'
 
 function LoginForm() {
   const handleSubmit = (data) => {
-    console.log('Form data:', data)
+    console.log('폼 데이터:', data)
   }
 
   return (
     <FormKit.Root formId="login" onSubmit={handleSubmit}>
-      <FormKit.Title>Login</FormKit.Title>
+      <FormKit.Title>로그인</FormKit.Title>
       
       <FormKit.Field>
-        <FormKit.Label>Email</FormKit.Label>
+        <FormKit.Label>이메일</FormKit.Label>
         <FormKit.Input name="email" type="email" required />
       </FormKit.Field>
       
       <FormKit.Field>
-        <FormKit.Label>Password</FormKit.Label>
+        <FormKit.Label>비밀번호</FormKit.Label>
         <FormKit.Input name="password" type="password" required />
       </FormKit.Field>
       
-      <FormKit.SubmitButton>Sign In</FormKit.SubmitButton>
+      <FormKit.SubmitButton>로그인</FormKit.SubmitButton>
     </FormKit.Root>
   )
 }
 ```
 
-### With Zod Validation
+### Zod 검증과 함께 사용
 
 ```tsx
 import FormKit from '@jiin.seok/formkit-react'
 import { z } from 'zod'
 
 const loginSchema = z.object({
-  email: z.string().email('Invalid email address'),
-  password: z.string().min(8, 'Password must be at least 8 characters')
+  email: z.string().email('유효하지 않은 이메일 주소입니다'),
+  password: z.string().min(8, '비밀번호는 최소 8자 이상이어야 합니다')
 })
 
 function LoginForm() {
   const handleSubmit = (data) => {
-    console.log('Validated data:', data)
+    console.log('검증된 데이터:', data)
   }
 
   return (
@@ -89,244 +91,244 @@ function LoginForm() {
       onSubmit={handleSubmit}
     >
       <FormKit.Field>
-        <FormKit.Label>Email</FormKit.Label>
+        <FormKit.Label>이메일</FormKit.Label>
         <FormKit.Input name="email" type="email" />
       </FormKit.Field>
       
       <FormKit.Field>
-        <FormKit.Label>Password</FormKit.Label>
+        <FormKit.Label>비밀번호</FormKit.Label>
         <FormKit.Input name="password" type="password" />
       </FormKit.Field>
       
-      <FormKit.SubmitButton>Sign In</FormKit.SubmitButton>
+      <FormKit.SubmitButton>로그인</FormKit.SubmitButton>
     </FormKit.Root>
   )
 }
 ```
 
-### Advanced Form with Select
+### Select를 포함한 고급 폼
 
 ```tsx
 import FormKit from '@jiin.seok/formkit-react'
 
 function RegistrationForm() {
   const countries = [
-    { value: 'us', label: 'United States' },
-    { value: 'uk', label: 'United Kingdom' },
-    { value: 'ca', label: 'Canada' },
+    { value: 'kr', label: '대한민국' },
+    { value: 'us', label: '미국' },
+    { value: 'jp', label: '일본' },
   ]
 
   return (
     <FormKit.Root formId="registration" onSubmit={handleSubmit}>
       <FormKit.Fieldset>
-        <FormKit.Legend required>Personal Information</FormKit.Legend>
+        <FormKit.Legend required>개인 정보</FormKit.Legend>
         
         <FormKit.Field>
-          <FormKit.Label>Full Name</FormKit.Label>
+          <FormKit.Label>이름</FormKit.Label>
           <FormKit.Input name="fullName" required />
         </FormKit.Field>
         
         <FormKit.Field>
-          <FormKit.Label>Country</FormKit.Label>
+          <FormKit.Label>국가</FormKit.Label>
           <FormKit.Select 
             name="country" 
             options={countries}
-            placeholder="Select your country"
+            placeholder="국가를 선택하세요"
             required
           />
         </FormKit.Field>
         
         <FormKit.Field>
-          <FormKit.Label>Bio</FormKit.Label>
+          <FormKit.Label>자기소개</FormKit.Label>
           <FormKit.Textarea 
             name="bio" 
-            placeholder="Tell us about yourself"
+            placeholder="간단한 자기소개를 작성해주세요"
             maxLength={500}
           />
         </FormKit.Field>
       </FormKit.Fieldset>
       
-      <FormKit.SubmitButton>Register</FormKit.SubmitButton>
+      <FormKit.SubmitButton>가입하기</FormKit.SubmitButton>
     </FormKit.Root>
   )
 }
 ```
 
-## 📦 Available Components
+## 📦 사용 가능한 컴포넌트
 
-FormKit provides a comprehensive set of form components:
+FormKit은 포괄적인 폼 컴포넌트 세트를 제공합니다:
 
-### 📝 Core Components
-- **FormKit.Root** - Main form container with validation context
-- **FormKit.Field** - Field wrapper with label-input association
-- **FormKit.Fieldset** - Group related fields
-- **FormKit.Legend** - Fieldset title with optional required indicator
+### 📝 핵심 컴포넌트
+- **FormKit.Root** - 검증 컨텍스트를 포함한 메인 폼 컨테이너
+- **FormKit.Field** - 레이블-입력 연결이 있는 필드 래퍼
+- **FormKit.Fieldset** - 관련된 필드 그룹화
+- **FormKit.Legend** - 필수 표시가 선택적으로 포함된 필드셋 제목
 
-### 🎨 Input Components
-- **FormKit.Input** - Text input with password toggle, email, number, etc.
-- **FormKit.Textarea** - Multi-line text input
-- **FormKit.Select** - Dropdown select with search (powered by Radix UI)
+### 🎨 입력 컴포넌트
+- **FormKit.Input** - 비밀번호 토글, 이메일, 숫자 등을 지원하는 텍스트 입력
+- **FormKit.Textarea** - 여러 줄 텍스트 입력
+- **FormKit.Select** - 검색 기능이 있는 드롭다운 선택 (Radix UI 기반)
 
-### 🏷️ Display Components
-- **FormKit.Label** - Field label
-- **FormKit.Title** - Form title
-- **FormKit.Wrapper** - Container for custom layouts
-- **FormKit.Unit** - Display units (e.g., "원", "kg")
-- **FormKit.Error** - Error message display
+### 🏷️ 표시 컴포넌트
+- **FormKit.Label** - 필드 레이블
+- **FormKit.Title** - 폼 제목
+- **FormKit.Wrapper** - 커스텀 레이아웃용 컨테이너
+- **FormKit.Unit** - 단위 표시 (예: "원", "kg")
+- **FormKit.Error** - 오류 메시지 표시
 
-### 🎯 Action Components
-- **FormKit.SubmitButton** - Submit button with loading states
-- **FormKit.ResetButton** - Reset form to initial values
+### 🎯 액션 컴포넌트
+- **FormKit.SubmitButton** - 로딩 상태가 있는 제출 버튼
+- **FormKit.ResetButton** - 폼을 초기값으로 재설정
 
-## 📚 API Reference
+## 📚 API 레퍼런스
 
 ### FormKit.Root
 
-The main form container that provides context to all child components.
+모든 자식 컴포넌트에 컨텍스트를 제공하는 메인 폼 컨테이너입니다.
 
-| Prop | Type | Required | Description |
-|------|------|----------|-------------|
-| formId | string | ✅ | Unique identifier for the form |
-| onSubmit | (data) => void | ✅ | Form submission handler |
-| schema | ZodSchema | ❌ | Zod schema for validation |
-| defaultValues | object | ❌ | Default form values |
+| Prop | Type | 필수 | 설명 |
+|------|------|------|------|
+| formId | string | ✅ | 폼의 고유 식별자 |
+| onSubmit | (data) => void | ✅ | 폼 제출 핸들러 |
+| schema | ZodSchema | ❌ | 검증을 위한 Zod 스키마 |
+| defaultValues | object | ❌ | 기본 폼 값 |
 
 ### FormKit.Field
 
-Container for form inputs with automatic label-input association.
+자동 레이블-입력 연결이 있는 폼 입력용 컨테이너입니다.
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| isInline | boolean | false | Display label and input horizontally |
-| hidden | boolean | false | Hide the field |
-| htmlFor | string | auto | Custom ID for label-input association |
+| Prop | Type | 기본값 | 설명 |
+|------|------|--------|------|
+| isInline | boolean | false | 레이블과 입력을 가로로 표시 |
+| hidden | boolean | false | 필드 숨기기 |
+| htmlFor | string | auto | 레이블-입력 연결을 위한 커스텀 ID |
 
 ### FormKit.Input
 
-Enhanced input component with built-in features.
+내장 기능이 있는 향상된 입력 컴포넌트입니다.
 
-| Prop | Type | Required | Description |
-|------|------|----------|-------------|
-| name | string | ✅ | Field name |
-| type | string | ❌ | Input type (text, email, password, etc.) |
-| required | boolean | ❌ | Mark field as required |
-| minLength | number | ❌ | Minimum character length |
-| maxLength | number | ❌ | Maximum character length |
+| Prop | Type | 필수 | 설명 |
+|------|------|------|------|
+| name | string | ✅ | 필드 이름 |
+| type | string | ❌ | 입력 타입 (text, email, password 등) |
+| required | boolean | ❌ | 필드를 필수로 표시 |
+| minLength | number | ❌ | 최소 문자 길이 |
+| maxLength | number | ❌ | 최대 문자 길이 |
 
-**Features:**
-- 🔒 Automatic password visibility toggle for `type="password"`
-- ✅ Automatic validation for confirm fields (e.g., `confirmPassword`)
-- 🎯 Full TypeScript support
+**기능:**
+- 🔒 `type="password"`에 대한 자동 비밀번호 가시성 토글
+- ✅ 확인 필드에 대한 자동 검증 (예: `confirmPassword`)
+- 🎯 완전한 TypeScript 지원
 
 ### FormKit.Select
 
-Dropdown select component with Radix UI.
+Radix UI를 사용한 드롭다운 선택 컴포넌트입니다.
 
-| Prop | Type | Required | Description |
-|------|------|----------|-------------|
-| name | string | ✅ | Field name |
-| options | Array<{value, label}> | ✅ | Select options |
-| placeholder | string | ❌ | Placeholder text |
-| required | boolean | ❌ | Mark field as required |
+| Prop | Type | 필수 | 설명 |
+|------|------|------|------|
+| name | string | ✅ | 필드 이름 |
+| options | Array<{value, label}> | ✅ | 선택 옵션 |
+| placeholder | string | ❌ | 플레이스홀더 텍스트 |
+| required | boolean | ❌ | 필드를 필수로 표시 |
 
 ### FormKit.Textarea
 
-Multi-line text input component.
+여러 줄 텍스트 입력 컴포넌트입니다.
 
-| Prop | Type | Required | Description |
-|------|------|----------|-------------|
-| name | string | ✅ | Field name |
-| required | boolean | ❌ | Mark field as required |
-| minLength | number | ❌ | Minimum character length |
-| maxLength | number | ❌ | Maximum character length |
-| rows | number | ❌ | Number of visible text lines (default: 4) |
+| Prop | Type | 필수 | 설명 |
+|------|------|------|------|
+| name | string | ✅ | 필드 이름 |
+| required | boolean | ❌ | 필드를 필수로 표시 |
+| minLength | number | ❌ | 최소 문자 길이 |
+| maxLength | number | ❌ | 최대 문자 길이 |
+| rows | number | ❌ | 표시되는 텍스트 줄 수 (기본값: 4) |
 
 ### FormKit.Fieldset
 
-Groups related form fields together.
+관련된 폼 필드를 함께 그룹화합니다.
 
-| Prop | Type | Required | Description |
-|------|------|----------|-------------|
-| className | string | ❌ | Custom CSS classes |
-| children | ReactNode | ✅ | Child components |
+| Prop | Type | 필수 | 설명 |
+|------|------|------|------|
+| className | string | ❌ | 커스텀 CSS 클래스 |
+| children | ReactNode | ✅ | 자식 컴포넌트 |
 
 ### FormKit.Legend
 
-Title for a fieldset with optional required indicator.
+필수 표시가 선택적으로 있는 필드셋 제목입니다.
 
-| Prop | Type | Required | Description |
-|------|------|----------|-------------|
-| required | boolean | ❌ | Shows red asterisk (*) |
-| className | string | ❌ | Custom CSS classes |
-| children | ReactNode | ✅ | Legend text |
+| Prop | Type | 필수 | 설명 |
+|------|------|------|------|
+| required | boolean | ❌ | 빨간색 별표(*) 표시 |
+| className | string | ❌ | 커스텀 CSS 클래스 |
+| children | ReactNode | ✅ | 범례 텍스트 |
 
 ### FormKit.Label
 
-Accessible label for form inputs.
+폼 입력을 위한 접근 가능한 레이블입니다.
 
-| Prop | Type | Required | Description |
-|------|------|----------|-------------|
-| className | string | ❌ | Custom CSS classes |
-| children | ReactNode | ✅ | Label text |
+| Prop | Type | 필수 | 설명 |
+|------|------|------|------|
+| className | string | ❌ | 커스텀 CSS 클래스 |
+| children | ReactNode | ✅ | 레이블 텍스트 |
 
 ### FormKit.Title
 
-Form title/header component.
+폼 제목/헤더 컴포넌트입니다.
 
-| Prop | Type | Required | Description |
-|------|------|----------|-------------|
-| className | string | ❌ | Custom CSS classes |
-| children | ReactNode | ✅ | Title text |
+| Prop | Type | 필수 | 설명 |
+|------|------|------|------|
+| className | string | ❌ | 커스텀 CSS 클래스 |
+| children | ReactNode | ✅ | 제목 텍스트 |
 
 ### FormKit.SubmitButton
 
-Submit button with built-in loading states.
+내장 로딩 상태가 있는 제출 버튼입니다.
 
-| Prop | Type | Required | Description |
-|------|------|----------|-------------|
-| variant | string | ❌ | Button style variant |
-| disabled | boolean | ❌ | Disable button |
-| className | string | ❌ | Custom CSS classes |
-| children | ReactNode | ✅ | Button text |
+| Prop | Type | 필수 | 설명 |
+|------|------|------|------|
+| variant | string | ❌ | 버튼 스타일 변형 |
+| disabled | boolean | ❌ | 버튼 비활성화 |
+| className | string | ❌ | 커스텀 CSS 클래스 |
+| children | ReactNode | ✅ | 버튼 텍스트 |
 
 ### FormKit.ResetButton
 
-Resets form to initial values.
+폼을 초기값으로 재설정합니다.
 
-| Prop | Type | Required | Description |
-|------|------|----------|-------------|
-| onClick | function | ❌ | Additional click handler |
-| className | string | ❌ | Custom CSS classes |
-| children | ReactNode | ✅ | Button text |
+| Prop | Type | 필수 | 설명 |
+|------|------|------|------|
+| onClick | function | ❌ | 추가 클릭 핸들러 |
+| className | string | ❌ | 커스텀 CSS 클래스 |
+| children | ReactNode | ✅ | 버튼 텍스트 |
 
 ### FormKit.Wrapper
 
-Container component for custom layouts.
+커스텀 레이아웃용 컨테이너 컴포넌트입니다.
 
-| Prop | Type | Required | Description |
-|------|------|----------|-------------|
-| className | string | ❌ | Custom CSS classes |
-| children | ReactNode | ✅ | Child components |
+| Prop | Type | 필수 | 설명 |
+|------|------|------|------|
+| className | string | ❌ | 커스텀 CSS 클래스 |
+| children | ReactNode | ✅ | 자식 컴포넌트 |
 
 ### FormKit.Unit
 
-Displays units next to input fields.
+입력 필드 옆에 단위를 표시합니다.
 
-| Prop | Type | Required | Description |
-|------|------|----------|-------------|
-| unit | string | ✅ | Unit text (e.g., "원", "kg", "%") |
+| Prop | Type | 필수 | 설명 |
+|------|------|------|------|
+| unit | string | ✅ | 단위 텍스트 (예: "원", "kg", "%") |
 
 ### FormKit.Error
 
-Displays validation error messages.
+검증 오류 메시지를 표시합니다.
 
-| Prop | Type | Required | Description |
-|------|------|----------|-------------|
-| error | FieldError | ❌ | Error object from react-hook-form |
+| Prop | Type | 필수 | 설명 |
+|------|------|------|------|
+| error | FieldError | ❌ | react-hook-form의 오류 객체 |
 
-## 🎨 Styling
+## 🎨 스타일링
 
-FormKit uses Tailwind CSS with CSS variables for theming. Add these variables to your CSS:
+FormKit은 테마를 위해 CSS 변수와 함께 Tailwind CSS를 사용합니다. CSS에 다음 변수를 추가하세요:
 
 ```css
 :root {
@@ -355,18 +357,18 @@ FormKit uses Tailwind CSS with CSS variables for theming. Add these variables to
   --ring: 212.7 26.8% 83.9%;
   --background: 222.2 84% 4.9%;
   --foreground: 210 40% 98%;
-  /* ... other dark mode variables */
+  /* ... 다른 다크 모드 변수들 */
 }
 ```
 
-## 🧪 Testing
+## 🧪 테스팅
 
 ```tsx
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import FormKit from '@jiin.seok/formkit-react'
 
-test('submits form data', async () => {
+test('폼 데이터 제출', async () => {
   const handleSubmit = jest.fn()
   
   render(
@@ -374,7 +376,7 @@ test('submits form data', async () => {
       <FormKit.Field>
         <FormKit.Input name="username" />
       </FormKit.Field>
-      <FormKit.SubmitButton>Submit</FormKit.SubmitButton>
+      <FormKit.SubmitButton>제출</FormKit.SubmitButton>
     </FormKit.Root>
   )
   
@@ -385,16 +387,16 @@ test('submits form data', async () => {
 })
 ```
 
-## 🤝 Contributing
+## 🤝 기여하기
 
-Contributions are welcome! Please read our [Contributing Guide](CONTRIBUTING.md) for details.
+기여를 환영합니다! 자세한 내용은 [기여 가이드](CONTRIBUTING.md)를 참조하세요.
 
-## 📄 License
+## 📄 라이선스
 
 MIT © [Jiin Seok]
 
-## 🔗 Links
+## 🔗 링크
 
-- [Documentation](https://github.com/JiinSeok/formkit-react)
-- [Examples](https://github.com/JiinSeok/formkit-react/tree/main/examples)
-- [Report Issues](https://github.com/JiinSeok/formkit-react/issues)
+- [문서](https://github.com/JiinSeok/formkit-react)
+- [예제](https://github.com/JiinSeok/formkit-react/tree/main/examples)
+- [이슈 리포트](https://github.com/JiinSeok/formkit-react/issues)
