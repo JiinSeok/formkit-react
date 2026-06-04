@@ -87,8 +87,7 @@ tsconfig.tsbuildinfo
 !.yarn/sdks
 !.yarn/versions
 
-# pnpm
-pnpm-lock.yaml
+# jiin: pnpm-lock.yaml은 CI/배포 재현성(frozen-lockfile)을 위해 커밋함
 
 # Temporary files
 *.tmp

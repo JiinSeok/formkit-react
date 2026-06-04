@@ -36,11 +36,8 @@ module.exports = {
           foreground: 'hsl(var(--popover-foreground))',
         },
       },
-      animation: {
-        'in': 'in 0.2s ease-out',
-        'out': 'out 0.2s ease-out',
-      },
     },
   },
-  plugins: [],
+  // jiin: Select가 쓰는 animate-in/fade-in-0/zoom-in-95 등은 tailwindcss-animate 플러그인 제공
+  plugins: [require('tailwindcss-animate')],
 }

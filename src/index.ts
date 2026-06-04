@@ -3,6 +3,9 @@ export { SelectKit } from './components/Select'
 export { Button } from './components/Button'
 export { cn } from './utils/cn'
 
+// jiin: README의 `import FormKit from '@jiin.seok/formkit-react'`(default import)가 동작해야 함
+export { default } from './components/FormKit'
+
 export type {
   FormProps,
   FormContextProps,

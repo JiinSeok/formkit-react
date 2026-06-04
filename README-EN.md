@@ -29,9 +29,26 @@ pnpm add @jiin.seok/formkit-react
 ### Peer Dependencies
 
 ```bash
-npm install react react-dom react-hook-form
-# Optional for Zod validation
-npm install zod @hookform/resolvers
+npm install react react-dom
+```
+
+> `react-hook-form`, `zod`, and `@hookform/resolvers` are installed automatically as package dependencies.
+
+### Import Styles
+
+Import the base stylesheet once at your app entry point (e.g. `main.tsx`, `layout.tsx`).
+
+```tsx
+import '@jiin.seok/formkit-react/styles.css'
+```
+
+Colors are CSS-variable based, so you can theme the library by overriding variables on `:root`.
+
+```css
+:root {
+  --primary: 222.2 47.4% 11.2%; /* hsl values without commas */
+  --destructive: 0 84.2% 60.2%;
+}
 ```
 
 ## 🚀 Quick Start

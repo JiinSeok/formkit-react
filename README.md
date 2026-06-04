@@ -31,9 +31,26 @@ pnpm add @jiin.seok/formkit-react
 ### Peer Dependencies
 
 ```bash
-npm install react react-dom react-hook-form
-# Zod 검증을 위한 선택적 설치
-npm install zod @hookform/resolvers
+npm install react react-dom
+```
+
+> `react-hook-form`, `zod`, `@hookform/resolvers` 등은 패키지 의존성으로 자동 설치됩니다.
+
+### 스타일 불러오기
+
+앱 진입점(예: `main.tsx`, `layout.tsx`)에서 기본 스타일을 한 번 불러옵니다.
+
+```tsx
+import '@jiin.seok/formkit-react/styles.css'
+```
+
+색상은 CSS 변수 기반이라 `:root`에서 변수만 오버라이드하면 테마를 바꿀 수 있습니다.
+
+```css
+:root {
+  --primary: 222.2 47.4% 11.2%; /* hsl 값 (쉼표 없이) */
+  --destructive: 0 84.2% 60.2%;
+}
 ```
 
 ## 🚀 빠른 시작

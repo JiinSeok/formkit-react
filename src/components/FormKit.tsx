@@ -15,7 +15,7 @@ import {
   ComponentProps,
 } from '../types'
 import { cn } from '../utils/cn'
-import { createContext, useContext, useEffect, useState, forwardRef, useImperativeHandle } from 'react'
+import { createContext, useContext, useId, useState, forwardRef, useImperativeHandle } from 'react'
 import {
   FieldError,
   FieldErrorsImpl,
@@ -188,8 +188,11 @@ function Field({
   isInline = false,
   hidden,
 }: FieldProps) {
-  const [fieldId, setFieldId] = useState<string>(htmlFor || '')
+  // jiin: effect에서 random id를 만들면 SSR에서 id가 비고 첫 렌더에 label 연결이 누락됨
+  // — React 18+의 useId는 서버/클라이언트 모두 안정적인 id를 보장
+  const generatedId = useId()
   const { formId } = useFormContext()
+  const fieldId = htmlFor || `${formId}-${generatedId}`
   const fieldClass = cn(
     'flex gap-4',
     {
@@ -198,29 +201,6 @@ function Field({
     },
     className,
   )
-
-  const generateUniqueId = () => {
-    if (
-      typeof crypto !== 'undefined' &&
-      typeof crypto.randomUUID === 'function'
-    ) {
-      return crypto.randomUUID()
-    }
-
-    return (
-      'id-' +
-      Math.random().toString(36).substring(2, 11) +
-      '-' +
-      Date.now().toString(36)
-    )
-  }
-
-  useEffect(() => {
-    if (!htmlFor) {
-      const generatedId = `${formId}-${generateUniqueId()}`
-      setFieldId(generatedId)
-    }
-  }, [formId, htmlFor])
 
   return (
     <FieldContext.Provider value={{ forId: fieldId }}>

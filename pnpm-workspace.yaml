@@ -1,0 +1,3 @@
+# jiin: esbuild는 vite 8(rolldown 기반)의 optional peer라 실제로 설치되지 않음 — 빌드 스크립트 불허
+allowBuilds:
+  esbuild: false
