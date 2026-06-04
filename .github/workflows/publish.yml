@@ -1,11 +1,15 @@
 name: Publish to npm
 
+# jiin: main 머지 시 자동 배포. package.json 버전이 레지스트리에 없을 때만 publish하므로
+# 버전 범프 없는 커밋(문서 수정 등)은 안전하게 스킵된다.
 on:
-  release:
-    types: [published]
   push:
-    tags:
-      - 'v*'
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write # jiin: npm Trusted Publishing(OIDC)에 필요 — NPM_TOKEN secret 불필요
 
 jobs:
   publish:
@@ -24,22 +28,43 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
           cache: 'pnpm'
 
+      # jiin: OIDC 인증은 npm 11.5+ 필요 (node 22 번들 npm은 10.x)
+      - name: Update npm for OIDC support
+        run: npm install -g npm@latest
+
+      - name: Check if version is already published
+        id: version
+        run: |
+          NAME=$(node -p "require('./package.json').name")
+          VERSION=$(node -p "require('./package.json').version")
+          if npm view "$NAME@$VERSION" version >/dev/null 2>&1; then
+            echo "이미 배포된 버전($VERSION) — 스킵"
+            echo "publish=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "새 버전($VERSION) — 배포 진행"
+            echo "publish=true" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Install dependencies
+        if: steps.version.outputs.publish == 'true'
         run: pnpm install --frozen-lockfile
 
       - name: Run tests
+        if: steps.version.outputs.publish == 'true'
         run: pnpm test
 
       - name: Run type check
+        if: steps.version.outputs.publish == 'true'
         run: pnpm type-check
 
       - name: Run lint
+        if: steps.version.outputs.publish == 'true'
         run: pnpm lint
 
       - name: Build
+        if: steps.version.outputs.publish == 'true'
         run: pnpm build
 
       - name: Publish to npm
+        if: steps.version.outputs.publish == 'true'
         run: npm publish --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
