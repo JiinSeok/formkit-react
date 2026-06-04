@@ -50,7 +50,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/JiinSeok/formkit-react"
+    "url": "git+https://github.com/JiinSeok/formkit-react.git"
   },
   "bugs": {
     "url": "https://github.com/JiinSeok/formkit-react/issues"
