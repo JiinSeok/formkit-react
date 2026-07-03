@@ -9,11 +9,17 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant = 'default', size = 'default', ...props }, ref) => {
     
+    // jiin: 색 토큰이 완전색상값(var())이라 Tailwind v3의 /opacity 모디파이어는 알파를 주입하지 못하고
+    // 규칙을 통째로 누락시킨다. 대신 color-mix arbitrary value로 알파를 명시한다(hsl·oklch 무관하게 동작).
+    // bg-primary/90 == primary 알파 90% == transparent와 10% 혼합.
     const variants = {
-      default: 'bg-primary text-primary-foreground hover:bg-primary/90',
-      destructive: 'bg-destructive text-destructive-foreground hover:bg-destructive/90',
+      default:
+        'bg-primary text-primary-foreground hover:bg-[color-mix(in_oklab,var(--primary)_90%,transparent)]',
+      destructive:
+        'bg-destructive text-destructive-foreground hover:bg-[color-mix(in_oklab,var(--destructive)_90%,transparent)]',
       outline: 'border border-input bg-background hover:bg-accent hover:text-accent-foreground',
-      secondary: 'bg-secondary text-secondary-foreground hover:bg-secondary/80',
+      secondary:
+        'bg-secondary text-secondary-foreground hover:bg-[color-mix(in_oklab,var(--secondary)_80%,transparent)]',
       ghost: 'hover:bg-accent hover:text-accent-foreground',
       link: 'text-primary underline-offset-4 hover:underline',
     }

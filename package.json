@@ -1,6 +1,6 @@
 {
   "name": "@jiin.seok/formkit-react",
-  "version": "0.2.0",
+  "version": "0.2.2",
   "description": "A powerful React form library with Compound Component Pattern, built-in validation, and TypeScript support",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
