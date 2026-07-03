@@ -35,9 +35,12 @@ module.exports = {
           DEFAULT: 'var(--accent)',
           foreground: 'var(--accent-foreground)',
         },
+        // jiin: popover(드롭다운·툴팁 등 떠 있는 표면)는 소비자가 --popover를 정의하지
+        // 않거나 상속이 끊겨도 투명해지면 안 된다(뒤 내용이 비쳐 읽을 수 없다).
+        // var() fallback으로 불투명 흰 배경+진한 잉크를 기본 보장한다(라이트 테마 값과 동일).
         popover: {
-          DEFAULT: 'var(--popover)',
-          foreground: 'var(--popover-foreground)',
+          DEFAULT: 'var(--popover, #fff)',
+          foreground: 'var(--popover-foreground, #020817)',
         },
       },
     },
