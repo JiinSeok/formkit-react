@@ -16,7 +16,15 @@ import {
 } from '../types'
 import { cn } from '../utils/cn'
 import { DEFAULT_LOCALE, FORM_MESSAGES } from '../messages'
-import { createContext, useContext, useId, useState, forwardRef, useImperativeHandle } from 'react'
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useId,
+  useState,
+  forwardRef,
+  useImperativeHandle,
+} from 'react'
 import {
   FieldError,
   FieldErrorsImpl,
@@ -38,7 +46,15 @@ export const useFormContext = () => {
   return context
 }
 
-const FieldContext = createContext<{ forId: string } | undefined>(undefined)
+const FieldContext = createContext<
+  | {
+      forId: string
+      descriptionId: string
+      hasDescription: boolean
+      setHasDescription: (has: boolean) => void
+    }
+  | undefined
+>(undefined)
 
 const useFieldContext = () => {
   const context = useContext(FieldContext)
@@ -200,6 +216,9 @@ function Field({
   const generatedId = useId()
   const { formId } = useFormContext()
   const fieldId = htmlFor || `${formId}-${generatedId}`
+  // jiin: Description은 있을 때만 aria-describedby로 가리켜야 한다 — 없는 id를 가리키면
+  // 보조기기가 읽을 것을 찾다가 아무것도 못 찾는다
+  const [hasDescription, setHasDescription] = useState(false)
   const fieldClass = cn(
     'flex gap-4',
     {
@@ -210,12 +229,53 @@ function Field({
   )
 
   return (
-    <FieldContext.Provider value={{ forId: fieldId }}>
+    <FieldContext.Provider
+      value={{
+        forId: fieldId,
+        descriptionId: `${fieldId}-description`,
+        hasDescription,
+        setHasDescription,
+      }}
+    >
       <label className={fieldClass} htmlFor={fieldId} hidden={hidden}>
         {children}
       </label>
     </FieldContext.Provider>
   )
+}
+
+// 입력 예시·형식 안내처럼 칸 옆에 두는 설명. Field가 label이라 그냥 두면 칸 이름에 설명까지
+// 섞여 읽힌다. 이름에서 빼고 aria-describedby로만 읽게 한다(참조된 요소는 hidden이어도 읽힌다).
+function Description({ children, className }: ComponentProps) {
+  const { descriptionId, setHasDescription } = useFieldContext()
+
+  useEffect(() => {
+    setHasDescription(true)
+    return () => setHasDescription(false)
+  }, [setHasDescription])
+
+  return (
+    <p
+      id={descriptionId}
+      aria-hidden="true"
+      className={cn('text-sm font-normal text-muted-foreground', className)}
+    >
+      {children}
+    </p>
+  )
+}
+
+// 설명과 오류를 함께 가리킨다. 하나만 넣으면 나머지가 읽히지 않는다.
+function describedBy(
+  descriptionId: string,
+  hasDescription: boolean,
+  errorId: string,
+  hasError: boolean,
+) {
+  const ids = []
+  if (hasDescription) ids.push(descriptionId)
+  if (hasError) ids.push(errorId)
+  return ids.length > 0 ? ids.join(' ') : undefined
 }
 
 function Label({ children, className }: ComponentProps) {
@@ -267,7 +327,7 @@ function Input({
   ...rest
 }: InputProps) {
   const { register, errors, watch, messages } = useFormContext()
-  const { forId } = useFieldContext()
+  const { forId, descriptionId, hasDescription } = useFieldContext()
 
   const rules: RegisterOptions = {
     required,
@@ -317,7 +377,7 @@ function Input({
           // jiin: 시각 별표(Legend)와 별개로 SR에 필수/에러 상태를 전달. rest 뒤에 둬 a11y 속성을 보장
           aria-required={required || undefined}
           aria-invalid={error ? true : undefined}
-          aria-describedby={error ? errorId : undefined}
+          aria-describedby={describedBy(descriptionId, hasDescription, errorId, Boolean(error))}
         />
         {isPasswordField && (
           <button
@@ -351,7 +411,7 @@ function Textarea({
     maxLength,
   }
   const { register, errors } = useFormContext()
-  const { forId } = useFieldContext()
+  const { forId, descriptionId, hasDescription } = useFieldContext()
   const textareaClass = cn(
     'flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 resize-none',
     className,
@@ -370,7 +430,7 @@ function Textarea({
         {...rest}
         aria-required={required || undefined}
         aria-invalid={error ? true : undefined}
-        aria-describedby={error ? errorId : undefined}
+        aria-describedby={describedBy(descriptionId, hasDescription, errorId, Boolean(error))}
       />
       <ErrorMessage error={error} id={errorId} />
     </>
@@ -383,10 +443,11 @@ function FormSelect({
   placeholder,
   required = false,
   className,
+  onValueChange,
   ...rest
 }: SelectProps) {
   const { control, errors, messages } = useFormContext()
-  const { forId } = useFieldContext()
+  const { forId, descriptionId, hasDescription } = useFieldContext()
 
   // jiin: 넘긴 placeholder가 있으면 그대로, 없으면 locale 기본 문구를 쓴다
   const resolvedPlaceholder = placeholder ?? messages.selectPlaceholder
@@ -403,9 +464,14 @@ function FormSelect({
         defaultValue=""
         render={({ field }) => (
           <SelectKit.Root
-            onValueChange={field.onChange}
-            value={field.value || ''}
             {...rest}
+            // jiin: 넘어온 onValueChange를 그대로 Root에 흘리면 field.onChange를 덮어써
+            // 고른 값이 폼에 들어가지 않는다 — 폼에 먼저 넣고 바깥에도 알린다
+            onValueChange={(value) => {
+              field.onChange(value)
+              onValueChange?.(value)
+            }}
+            value={field.value || ''}
           >
             {/* jiin: Radix Trigger는 버튼이므로 aria-*를 그대로 전달해 필수/에러 상태를 SR에 노출 */}
             <SelectKit.Trigger
@@ -413,7 +479,7 @@ function FormSelect({
               id={forId}
               aria-required={required || undefined}
               aria-invalid={error ? true : undefined}
-              aria-describedby={error ? errorId : undefined}
+              aria-describedby={describedBy(descriptionId, hasDescription, errorId, Boolean(error))}
             >
               <SelectKit.Value placeholder={resolvedPlaceholder} />
             </SelectKit.Trigger>
@@ -445,6 +511,7 @@ export const FormKit = {
   Legend,
   Field,
   Label,
+  Description,
   Wrapper,
   Unit,
   Error: ErrorMessage,

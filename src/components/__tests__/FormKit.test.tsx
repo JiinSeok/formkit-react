@@ -171,4 +171,109 @@ describe('FormKit', () => {
     expect(input).toHaveAttribute('aria-describedby', alert.id)
     expect(alert.id).toBeTruthy()
   })
+
+  it('Description을 두면 입력이 그 설명을 aria-describedby로 가리킨다', () => {
+    render(
+      <FormKit.Root formId="signup" onSubmit={vi.fn()}>
+        <FormKit.Field htmlFor="headcount">
+          <FormKit.Label>예상 인원</FormKit.Label>
+          <FormKit.Description>수업에 참여하실 어르신 수</FormKit.Description>
+          <FormKit.Input name="headcount" type="number" />
+        </FormKit.Field>
+      </FormKit.Root>,
+    )
+
+    const input = screen.getByRole('spinbutton', { name: '예상 인원' })
+    const description = screen.getByText('수업에 참여하실 어르신 수')
+
+    expect(input).toHaveAttribute('aria-describedby', description.id)
+    expect(description.id).toBeTruthy()
+  })
+
+  // 설명이 칸 이름에 섞이면 스크린리더로 칸 목록을 훑을 때 이름이 길어져 방해가 된다.
+  it('Description은 칸 이름에 섞이지 않는다', () => {
+    render(
+      <FormKit.Root formId="signup" onSubmit={vi.fn()}>
+        <FormKit.Field htmlFor="headcount">
+          <FormKit.Label>예상 인원</FormKit.Label>
+          <FormKit.Description>수업에 참여하실 어르신 수</FormKit.Description>
+          <FormKit.Input name="headcount" />
+        </FormKit.Field>
+      </FormKit.Root>,
+    )
+
+    expect(screen.getByText('수업에 참여하실 어르신 수')).toHaveAttribute('aria-hidden', 'true')
+  })
+
+  it('Description이 없으면 aria-describedby를 붙이지 않는다', () => {
+    render(
+      <FormKit.Root formId="signup" onSubmit={vi.fn()}>
+        <FormKit.Field htmlFor="name">
+          <FormKit.Label>성명</FormKit.Label>
+          <FormKit.Input name="name" />
+        </FormKit.Field>
+      </FormKit.Root>,
+    )
+
+    expect(screen.getByRole('textbox', { name: '성명' })).not.toHaveAttribute('aria-describedby')
+  })
+
+  it('설명과 에러가 함께 있으면 둘 다 가리킨다', async () => {
+    const user = userEvent.setup()
+    const schema = z.object({ email: z.string().email('유효하지 않은 이메일 주소입니다') })
+
+    render(
+      <FormKit.Root formId="login" schema={schema} onSubmit={vi.fn()}>
+        <FormKit.Field htmlFor="email">
+          <FormKit.Label>이메일</FormKit.Label>
+          <FormKit.Description>회사 주소를 적어 주세요</FormKit.Description>
+          <FormKit.Input name="email" required />
+        </FormKit.Field>
+        <FormKit.SubmitButton>로그인</FormKit.SubmitButton>
+      </FormKit.Root>,
+    )
+
+    const input = screen.getByRole('textbox', { name: '이메일' })
+    await user.type(input, '이메일아님')
+    await user.click(screen.getByRole('button', { name: '로그인' }))
+
+    const alert = await screen.findByRole('alert')
+    const description = screen.getByText('회사 주소를 적어 주세요')
+
+    await waitFor(() =>
+      expect(input).toHaveAttribute('aria-describedby', `${description.id} ${alert.id}`),
+    )
+  })
+
+  // onValueChange를 그대로 Root에 흘리면 field.onChange를 덮어써 고른 값이 폼에 들어가지 않았다.
+  it('Select에 onValueChange를 넘겨도 고른 값이 제출된다', async () => {
+    const user = userEvent.setup()
+    const handleSubmit = vi.fn()
+    const handleValueChange = vi.fn()
+
+    render(
+      <FormKit.Root formId="signup" onSubmit={handleSubmit}>
+        <FormKit.Field htmlFor="facility">
+          <FormKit.Label>기관 유형</FormKit.Label>
+          <FormKit.Select
+            name="facility"
+            options={[
+              { value: 'welfare', label: '노인복지기관' },
+              { value: 'etc', label: '기타' },
+            ]}
+            onValueChange={handleValueChange}
+          />
+        </FormKit.Field>
+        <FormKit.SubmitButton>보내기</FormKit.SubmitButton>
+      </FormKit.Root>,
+    )
+
+    await user.click(screen.getByRole('combobox'))
+    await user.click(await screen.findByRole('option', { name: '노인복지기관' }))
+    await user.click(screen.getByRole('button', { name: '보내기' }))
+
+    await waitFor(() => expect(handleSubmit).toHaveBeenCalledTimes(1))
+    expect(handleSubmit.mock.calls[0][0]).toEqual({ facility: 'welfare' })
+    expect(handleValueChange).toHaveBeenCalledWith('welfare')
+  })
 })

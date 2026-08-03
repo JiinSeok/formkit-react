@@ -188,6 +188,7 @@ FormKit은 포괄적인 폼 컴포넌트 세트를 제공합니다:
 
 ### 🏷️ 표시 컴포넌트
 - **FormKit.Label** - 필드 레이블
+- **FormKit.Description** - 입력 예시·형식 안내
 - **FormKit.Title** - 폼 제목
 - **FormKit.Wrapper** - 커스텀 레이아웃용 컨테이너
 - **FormKit.Unit** - 단위 표시 (예: "원", "kg")
@@ -305,6 +306,25 @@ Radix UI를 사용한 드롭다운 선택 컴포넌트입니다.
 |------|------|------|------|
 | className | string | ❌ | 커스텀 CSS 클래스 |
 | children | ReactNode | ✅ | 레이블 텍스트 |
+
+### FormKit.Description
+
+입력 예시나 형식을 안내하는 설명입니다. 같은 Field 안의 입력이 `aria-describedby`로 이 설명을 가리키므로, 스크린리더는 칸에 들어갔을 때 설명을 함께 읽습니다. 오류가 함께 있으면 설명과 오류를 모두 가리킵니다.
+
+설명은 칸 이름에는 섞이지 않습니다. Field가 `label`이라 그냥 두면 이름이 "예상 인원 수업에 참여하실 어르신 수"처럼 길어져, 칸 목록을 훑을 때 방해가 되기 때문입니다.
+
+```tsx
+<FormKit.Field>
+  <FormKit.Legend required>예상 인원</FormKit.Legend>
+  <FormKit.Description>수업에 참여하실 어르신 수</FormKit.Description>
+  <FormKit.Input name="headcount" type="number" required />
+</FormKit.Field>
+```
+
+| Prop | Type | 필수 | 설명 |
+|------|------|------|------|
+| className | string | ❌ | 커스텀 CSS 클래스 |
+| children | ReactNode | ✅ | 설명 텍스트 |
 
 ### FormKit.Title
 
