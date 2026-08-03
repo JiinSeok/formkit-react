@@ -74,7 +74,6 @@ const Form = forwardRef<any, FormProps>(({
   messages: messagesOverride,
   ...rest
 }, ref) => {
-  const FormClass = cn('flex flex-col flex-wrap', className)
 
   // jiin: locale 기본 문구 위에 개별 override를 얕게 덮어써 최종 문구를 만든다
   const messages = { ...FORM_MESSAGES[locale], ...messagesOverride }
@@ -133,7 +132,8 @@ const Form = forwardRef<any, FormProps>(({
       <form
         id={formId}
         onSubmit={handleSubmit(onSubmit)}
-        className={FormClass}
+        data-formkit="form"
+        className={cn(className)}
         {...(hasSchema ? {} : rest)}
       >
         {children}
@@ -145,11 +145,11 @@ const Form = forwardRef<any, FormProps>(({
 Form.displayName = 'Form'
 
 function Title({ children, className }: ComponentProps) {
-  const FormTitleClass = cn(
-    'self-center text-3xl font-semibold text-foreground',
-    className,
+  return (
+    <header data-formkit="title" className={cn(className)}>
+      {children}
+    </header>
   )
-  return <header className={FormTitleClass}>{children}</header>
 }
 
 function FormResetButton({
@@ -183,20 +183,19 @@ function FormSubmitButton({ children, variant = 'default', className, disabled, 
 }
 
 function Fieldset({ children, className }: ComponentProps) {
-  const fieldsetClass = cn('flex flex-col flex-wrap gap-4 py-4', className)
-  return <fieldset className={fieldsetClass}>{children}</fieldset>
+  return (
+    <fieldset data-formkit="fieldset" className={cn(className)}>
+      {children}
+    </fieldset>
+  )
 }
 
 function Legend({ children, className, required }: LegendProps) {
-  const legendClass = cn(
-    'flex flex-row flex-wrap justify-start items-center gap-1 text-xl font-normal text-foreground',
-    className,
-  )
   return (
-    <p className={legendClass}>
+    <p data-formkit="legend" className={cn(className)}>
       {children}
       {required && (
-        <span className="text-primary my-auto leading-none pt-1 text-md">
+        <span data-formkit="required" aria-hidden>
           *
         </span>
       )}
@@ -219,14 +218,6 @@ function Field({
   // jiin: Description은 있을 때만 aria-describedby로 가리켜야 한다 — 없는 id를 가리키면
   // 보조기기가 읽을 것을 찾다가 아무것도 못 찾는다
   const [hasDescription, setHasDescription] = useState(false)
-  const fieldClass = cn(
-    'flex gap-4',
-    {
-      'flex-row': isInline,
-      'flex-col': !isInline,
-    },
-    className,
-  )
 
   return (
     <FieldContext.Provider
@@ -237,7 +228,13 @@ function Field({
         setHasDescription,
       }}
     >
-      <label className={fieldClass} htmlFor={fieldId} hidden={hidden}>
+      <label
+        data-formkit="field"
+        data-inline={isInline}
+        className={cn(className)}
+        htmlFor={fieldId}
+        hidden={hidden}
+      >
         {children}
       </label>
     </FieldContext.Provider>
@@ -258,7 +255,8 @@ function Description({ children, className }: ComponentProps) {
     <p
       id={descriptionId}
       aria-hidden="true"
-      className={cn('text-sm font-normal text-muted-foreground', className)}
+      data-formkit="description"
+      className={cn(className)}
     >
       {children}
     </p>
@@ -279,20 +277,24 @@ function describedBy(
 }
 
 function Label({ children, className }: ComponentProps) {
-  const LabelClass = cn('text-xl font-normal text-foreground', className)
-  return <p className={LabelClass}>{children}</p>
+  return (
+    <p data-formkit="label" className={cn(className)}>
+      {children}
+    </p>
+  )
 }
 
 function Wrapper({ children, className }: ComponentProps) {
-  const wrapperClass = cn('relative block p-2', className)
-  return <div className={wrapperClass}>{children}</div>
+  return (
+    <div data-formkit="wrapper" className={cn(className)}>
+      {children}
+    </div>
+  )
 }
 
 function Unit({ unit }: { unit: string }) {
   return (
-    <span className="absolute top-8 right-8 z-10 transform -translate-y-1/2 block text-xl font-normal text-muted-foreground">
-      {unit}
-    </span>
+    <span data-formkit="unit">{unit}</span>
   )
 }
 
@@ -307,7 +309,7 @@ function ErrorMessage({
   // jiin: role="alert"(=암묵적 aria-live="assertive")로 동적으로 나타난 에러를 SR이 즉시 읽게 한다.
   // aria-describedby로 필드와 연결하기 위해 id를 받는다.
   return (
-    <p id={id} role="alert" aria-live="assertive" className="text-destructive text-sm">
+    <p id={id} role="alert" aria-live="assertive" data-formkit="error">
       {typeof error === 'object' &&
         'message' in error &&
         (error.message as string)}
@@ -337,10 +339,6 @@ function Input({
     validate,
   }
 
-  const inputClass = cn(
-    `flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50`,
-    className,
-  )
 
   const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false)
   const isPasswordField = type === 'password'
@@ -367,12 +365,13 @@ function Input({
 
   return (
     <>
-      <div className="relative">
+      <div data-formkit="wrapper">
         <input
           {...register(name, rules)}
           type={inputType}
           id={forId}
-          className={inputClass}
+          data-formkit="input"
+          className={cn(className)}
           {...rest}
           // jiin: 시각 별표(Legend)와 별개로 SR에 필수/에러 상태를 전달. rest 뒤에 둬 a11y 속성을 보장
           aria-required={required || undefined}
@@ -383,7 +382,7 @@ function Input({
           <button
             type="button"
             onClick={togglePasswordVisibility}
-            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+            data-formkit="password-toggle"
             aria-label={isPasswordVisible ? messages.hidePassword : messages.showPassword}
           >
             {isPasswordVisible ? <EyeOff size={20} /> : <Eye size={20} />}
@@ -412,10 +411,6 @@ function Textarea({
   }
   const { register, errors } = useFormContext()
   const { forId, descriptionId, hasDescription } = useFieldContext()
-  const textareaClass = cn(
-    'flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 resize-none',
-    className,
-  )
 
   const error = errors?.[name]
   const errorId = `${forId}-error`
@@ -424,7 +419,8 @@ function Textarea({
     <>
       <textarea
         {...register(name, rules)}
-        className={textareaClass}
+        data-formkit="textarea"
+        className={cn(className)}
         id={forId}
         rows={4}
         {...rest}

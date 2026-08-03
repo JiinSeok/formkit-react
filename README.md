@@ -13,7 +13,7 @@
 - 🔄 **React Hook Form 통합** - 성능 최적화
 - 🛡️ **Zod 스키마 지원** - 타입 안전 검증
 - ♿ **접근성 우선** - ARIA 준수
-- 🎨 **Tailwind CSS 스타일링** - 기본적으로 아름다운 디자인
+- 🎨 **켜고 끄는 기본 테마** - 스타일시트를 불러오면 바로 쓸 만한 모양, 안 불러오면 순수 HTML
 - 📝 **TypeScript** - 완전한 타입 안정성
 - 🔒 **비밀번호 토글** - 내장 가시성 토글
 - 🎛️ **Select 컴포넌트** - Radix UI 기반
@@ -38,20 +38,15 @@ npm install react react-dom
 
 ### 스타일 불러오기
 
-앱 진입점(예: `main.tsx`, `layout.tsx`)에서 기본 스타일을 한 번 불러옵니다.
+기본 테마를 쓰려면 앱 진입점(예: `main.tsx`, `layout.tsx`)에서 한 번 불러옵니다.
 
 ```tsx
 import '@jiin.seok/formkit-react/styles.css'
 ```
 
-색상은 CSS 변수 기반이라 `:root`에서 변수만 오버라이드하면 테마를 바꿀 수 있습니다.
-
-```css
-:root {
-  --primary: 222.2 47.4% 11.2%; /* hsl 값 (쉼표 없이) */
-  --destructive: 0 84.2% 60.2%;
-}
-```
+이 줄을 넣지 않으면 컴포넌트는 아무 스타일도 얹지 않은 순수 HTML로 그려집니다. 처음부터 직접
+그리고 싶으면 불러오지 않으면 됩니다. 스타일시트는 Tailwind를 요구하지 않으므로 어떤 앱에서도
+동작합니다.
 
 ## 🚀 빠른 시작
 
@@ -383,38 +378,44 @@ Radix UI를 사용한 드롭다운 선택 컴포넌트입니다.
 
 ## 🎨 스타일링
 
-FormKit은 테마를 위해 CSS 변수와 함께 Tailwind CSS를 사용합니다. CSS에 다음 변수를 추가하세요:
+### 색 바꾸기
+
+기본 테마는 호스트 앱의 CSS 변수를 먼저 읽고, 없을 때만 자체 기본값으로 떨어집니다. `:root`에
+아래 변수 중 있는 것만 정의하면 그대로 반영됩니다. 값은 완전한 색상값(`oklch(...)`·`hsl(...)`·
+`#hex`)으로 씁니다.
 
 ```css
 :root {
-  --border: 214.3 31.8% 91.4%;
-  --input: 214.3 31.8% 91.4%;
-  --ring: 222.2 84% 4.9%;
-  --background: 0 0% 100%;
-  --foreground: 222.2 84% 4.9%;
-  --primary: 222.2 47.4% 11.2%;
-  --primary-foreground: 210 40% 98%;
-  --secondary: 210 40% 96.1%;
-  --secondary-foreground: 222.2 47.4% 11.2%;
-  --destructive: 0 84.2% 60.2%;
-  --destructive-foreground: 210 40% 98%;
-  --muted: 210 40% 96.1%;
-  --muted-foreground: 215.4 16.3% 46.9%;
-  --accent: 210 40% 96.1%;
-  --accent-foreground: 222.2 47.4% 11.2%;
-  --popover: 0 0% 100%;
-  --popover-foreground: 222.2 84% 4.9%;
-}
-
-.dark {
-  --border: 217.2 32.6% 17.5%;
-  --input: 217.2 32.6% 17.5%;
-  --ring: 212.7 26.8% 83.9%;
-  --background: 222.2 84% 4.9%;
-  --foreground: 210 40% 98%;
-  /* ... 다른 다크 모드 변수들 */
+  --primary: oklch(0.53 0.15 215); /* 강조색: 기본 버튼·초점 테두리·필수 표시 */
+  --primary-foreground: oklch(0.99 0 0); /* 강조색 위 글자 */
+  --background: oklch(1 0 0); /* 초점이 온 입력칸 배경 */
+  --foreground: oklch(0.24 0.015 270); /* 본문 글자 */
+  --muted-foreground: oklch(0.52 0.012 270); /* 안내문·플레이스홀더 */
+  --input: oklch(0.9 0.006 270); /* 테두리 */
+  --destructive: oklch(0.55 0.2 25); /* 오류 */
 }
 ```
+
+곡률·컨트롤 높이는 `--fk-` 변수로 바꿉니다.
+
+```css
+:root {
+  --fk-radius: 0.625rem;
+  --fk-control-height: 2.75rem;
+}
+```
+
+### 클래스로 덮어쓰기
+
+컴포넌트는 `className`을 그대로 흘려보내고, 기본 모양은 `@layer formkit` 안에서만 그립니다.
+레이어에 든 규칙은 레이어 밖 규칙과 프레임워크 유틸리티에 항상 지므로, 넘긴 클래스는 이름이
+무엇이든 특이성이 얼마든 기본값을 이깁니다.
+
+```tsx
+<FormKit.Input name="email" className="rounded-none border-2 border-black" />
+```
+
+Tailwind를 쓰지 않는 앱이면 평범한 CSS 클래스를 넘겨도 같습니다.
 
 ## 🧪 테스팅
 

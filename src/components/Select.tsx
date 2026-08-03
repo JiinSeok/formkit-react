@@ -8,19 +8,19 @@ import * as React from 'react'
 export function Select({
   ...props
 }: React.ComponentProps<typeof SelectPrimitive.Root>) {
-  return <SelectPrimitive.Root data-slot="select" {...props} />
+  return <SelectPrimitive.Root {...props} />
 }
 
 export function SelectGroup({
   ...props
 }: React.ComponentProps<typeof SelectPrimitive.Group>) {
-  return <SelectPrimitive.Group data-slot="select-group" {...props} />
+  return <SelectPrimitive.Group {...props} />
 }
 
 export function SelectValue({
   ...props
 }: React.ComponentProps<typeof SelectPrimitive.Value>) {
-  return <SelectPrimitive.Value data-slot="select-value" {...props} />
+  return <SelectPrimitive.Value {...props} />
 }
 
 export function SelectTrigger({
@@ -33,18 +33,14 @@ export function SelectTrigger({
 }) {
   return (
     <SelectPrimitive.Trigger
-      data-slot="select-trigger"
+      data-formkit="trigger"
       data-size={size}
-      className={cn(
-        'flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 data-[placeholder]:text-muted-foreground justify-between items-center',
-        size === 'sm' && 'h-8',
-        className,
-      )}
+      className={cn(className)}
       {...props}
     >
       {children}
       <SelectPrimitive.Icon asChild>
-        <ChevronDownIcon className="h-4 w-4 opacity-50" />
+        <ChevronDownIcon data-formkit="trigger-icon" size={16} />
       </SelectPrimitive.Icon>
     </SelectPrimitive.Trigger>
   )
@@ -59,24 +55,13 @@ export function SelectContent({
   return (
     <SelectPrimitive.Portal>
       <SelectPrimitive.Content
-        data-slot="select-content"
-        className={cn(
-          'bg-popover text-popover-foreground data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 relative z-50 max-h-[var(--radix-select-content-available-height)] min-w-[8rem] origin-[var(--radix-select-content-transform-origin)] overflow-x-hidden overflow-y-auto rounded-md border shadow-md',
-          position === 'popper' &&
-            'data-[side=bottom]:translate-y-1 data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=top]:-translate-y-1',
-          className,
-        )}
+        data-formkit="content"
+        className={cn(className)}
         position={position}
         {...props}
       >
         <SelectScrollUpButton />
-        <SelectPrimitive.Viewport
-          className={cn(
-            'p-1',
-            position === 'popper' &&
-              'h-[var(--radix-select-trigger-height)] w-full min-w-[var(--radix-select-trigger-width)] scroll-my-1',
-          )}
-        >
+        <SelectPrimitive.Viewport data-formkit="viewport">
           {children}
         </SelectPrimitive.Viewport>
         <SelectScrollDownButton />
@@ -91,8 +76,8 @@ export function SelectLabel({
 }: React.ComponentProps<typeof SelectPrimitive.Label>) {
   return (
     <SelectPrimitive.Label
-      data-slot="select-label"
-      className={cn('text-muted-foreground px-2 py-1.5 text-xs', className)}
+      data-formkit="group-label"
+      className={cn(className)}
       {...props}
     />
   )
@@ -105,18 +90,13 @@ export function SelectItem({
 }: React.ComponentProps<typeof SelectPrimitive.Item>) {
   return (
     <SelectPrimitive.Item
-      data-slot="select-item"
-      className={cn(
-        // jiin: 왼쪽 체크(✓) 자리를 항목 padding(pl-8)으로 확보한다. 예전엔 텍스트 pl-5로만
-        // 여백을 줘서, 선택된 항목에 체크가 뜨면 첫 글자에 바짝 붙어 겹쳐 보였다(gutter 부족).
-        'focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pr-2 pl-8 text-sm outline-none',
-        className,
-      )}
+      data-formkit="item"
+      className={cn(className)}
       {...props}
     >
-      <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
+      <span data-formkit="item-indicator">
         <SelectPrimitive.ItemIndicator>
-          <CheckIcon className="h-3.5 w-3.5" />
+          <CheckIcon size={14} />
         </SelectPrimitive.ItemIndicator>
       </span>
       <SelectPrimitive.ItemText>{children}</SelectPrimitive.ItemText>
@@ -130,8 +110,8 @@ export function SelectSeparator({
 }: React.ComponentProps<typeof SelectPrimitive.Separator>) {
   return (
     <SelectPrimitive.Separator
-      data-slot="select-separator"
-      className={cn('bg-muted -mx-1 my-1 h-px', className)}
+      data-formkit="separator"
+      className={cn(className)}
       {...props}
     />
   )
@@ -143,13 +123,11 @@ function SelectScrollUpButton({
 }: React.ComponentProps<typeof SelectPrimitive.ScrollUpButton>) {
   return (
     <SelectPrimitive.ScrollUpButton
-      className={cn(
-        'flex cursor-default items-center justify-center py-1',
-        className,
-      )}
+      data-formkit="scroll-button"
+      className={cn(className)}
       {...props}
     >
-      <ChevronUpIcon className="h-4 w-4" />
+      <ChevronUpIcon size={16} />
     </SelectPrimitive.ScrollUpButton>
   )
 }
@@ -160,13 +138,11 @@ function SelectScrollDownButton({
 }: React.ComponentProps<typeof SelectPrimitive.ScrollDownButton>) {
   return (
     <SelectPrimitive.ScrollDownButton
-      className={cn(
-        'flex cursor-default items-center justify-center py-1',
-        className,
-      )}
+      data-formkit="scroll-button"
+      className={cn(className)}
       {...props}
     >
-      <ChevronDownIcon className="h-4 w-4" />
+      <ChevronDownIcon size={16} />
     </SelectPrimitive.ScrollDownButton>
   )
 }
