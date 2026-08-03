@@ -20,6 +20,9 @@ export type {
   FormResetButtonProps,
 } from './types'
 
+export { FORM_MESSAGES, DEFAULT_LOCALE } from './messages'
+export type { FormLocale, FormMessages } from './messages'
+
 // Re-export types from dependencies for convenience
 export type {
   UseFormReturn,

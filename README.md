@@ -209,6 +209,24 @@ FormKit은 포괄적인 폼 컴포넌트 세트를 제공합니다:
 | onSubmit | (data) => void | ✅ | 폼 제출 핸들러 |
 | schema | ZodSchema | ❌ | 검증을 위한 Zod 스키마 |
 | defaultValues | object | ❌ | 기본 폼 값 |
+| locale | `'ko' \| 'en'` | ❌ | 자동 노출 문구(Select placeholder·비밀번호 aria-label)의 기본 언어. 기본값 `'en'` |
+| messages | `Partial<FormMessages>` | ❌ | 개별 문구만 덮어쓰기. `locale` 기본값 위에 얕게 병합됨 |
+
+```tsx
+// 폼 전체의 기본 문구를 한국어로
+<FormKit.Root formId="signup" locale="ko" onSubmit={onSubmit}>
+  {/* Select 기본 placeholder가 '옵션을 선택하세요'로 나온다 */}
+  <FormKit.Select name="genre" options={options} />
+</FormKit.Root>
+
+// 특정 문구만 커스텀
+<FormKit.Root
+  formId="signup"
+  locale="ko"
+  messages={{ selectPlaceholder: '장르를 골라주세요' }}
+  onSubmit={onSubmit}
+/>
+```
 
 ### FormKit.Field
 
@@ -245,7 +263,7 @@ Radix UI를 사용한 드롭다운 선택 컴포넌트입니다.
 |------|------|------|------|
 | name | string | ✅ | 필드 이름 |
 | options | Array<{value, label}> | ✅ | 선택 옵션 |
-| placeholder | string | ❌ | 플레이스홀더 텍스트 |
+| placeholder | string | ❌ | 플레이스홀더 텍스트. 넘기지 않으면 `FormKit.Root`의 `locale`에 맞는 기본값 사용 |
 | required | boolean | ❌ | 필드를 필수로 표시 |
 
 ### FormKit.Textarea

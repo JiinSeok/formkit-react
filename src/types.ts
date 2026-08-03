@@ -13,6 +13,7 @@ import type {
   RegisterOptions,
 } from 'react-hook-form'
 import type { ZodSchema } from 'zod'
+import type { FormLocale, FormMessages } from './messages'
 
 export interface FormContextProps {
   formId: string
@@ -28,6 +29,8 @@ export interface FormContextProps {
   register: UseFormRegister<any>
   setFocus: UseFormSetFocus<any>
   control: Control<any>
+  // jiin: locale로 해석된 기본 문구. 하위 필드가 placeholder를 안 넘겼을 때 사용
+  messages: FormMessages
 }
 
 export interface FormProps extends HTMLAttributes<HTMLFormElement> {
@@ -35,6 +38,10 @@ export interface FormProps extends HTMLAttributes<HTMLFormElement> {
   onSubmit: SubmitHandler<any>
   defaultValues?: Record<string, any>
   schema?: ZodSchema<any>
+  // jiin: 자동 노출 문구(Select placeholder 등)의 기본 언어. 기본값 'en'
+  locale?: FormLocale
+  // jiin: 개별 문구만 커스텀하고 싶을 때. locale 기본값 위에 얕게 덮어쓴다
+  messages?: Partial<FormMessages>
   children: ReactNode
 }
 

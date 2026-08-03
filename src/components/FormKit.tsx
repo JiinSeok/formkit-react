@@ -15,6 +15,7 @@ import {
   ComponentProps,
 } from '../types'
 import { cn } from '../utils/cn'
+import { DEFAULT_LOCALE, FORM_MESSAGES } from '../messages'
 import { createContext, useContext, useId, useState, forwardRef, useImperativeHandle } from 'react'
 import {
   FieldError,
@@ -53,9 +54,14 @@ const Form = forwardRef<any, FormProps>(({
   formId,
   onSubmit,
   defaultValues = {},
+  locale = DEFAULT_LOCALE,
+  messages: messagesOverride,
   ...rest
 }, ref) => {
   const FormClass = cn('flex flex-col flex-wrap', className)
+
+  // jiin: locale 기본 문구 위에 개별 override를 얕게 덮어써 최종 문구를 만든다
+  const messages = { ...FORM_MESSAGES[locale], ...messagesOverride }
 
   const hasSchema = 'schema' in rest && rest.schema
   const formOptions = hasSchema
@@ -105,6 +111,7 @@ const Form = forwardRef<any, FormProps>(({
         register,
         setFocus,
         control,
+        messages,
       }}
     >
       <form
@@ -231,12 +238,16 @@ function Unit({ unit }: { unit: string }) {
 
 function ErrorMessage({
   error,
+  id,
 }: {
   error: FieldError | Merge<FieldErrorsImpl, any> | undefined
+  id?: string
 }) {
   if (!error) return null
+  // jiin: role="alert"(=암묵적 aria-live="assertive")로 동적으로 나타난 에러를 SR이 즉시 읽게 한다.
+  // aria-describedby로 필드와 연결하기 위해 id를 받는다.
   return (
-    <p className="text-destructive text-sm">
+    <p id={id} role="alert" aria-live="assertive" className="text-destructive text-sm">
       {typeof error === 'object' &&
         'message' in error &&
         (error.message as string)}
@@ -255,7 +266,7 @@ function Input({
   validate,
   ...rest
 }: InputProps) {
-  const { register, errors, watch } = useFormContext()
+  const { register, errors, watch, messages } = useFormContext()
   const { forId } = useFieldContext()
 
   const rules: RegisterOptions = {
@@ -291,6 +302,9 @@ function Input({
     rules.validate = (value) => value === confirmInputValue
   }
 
+  const error = errors?.[name]
+  const errorId = `${forId}-error`
+
   return (
     <>
       <div className="relative">
@@ -300,19 +314,23 @@ function Input({
           id={forId}
           className={inputClass}
           {...rest}
+          // jiin: 시각 별표(Legend)와 별개로 SR에 필수/에러 상태를 전달. rest 뒤에 둬 a11y 속성을 보장
+          aria-required={required || undefined}
+          aria-invalid={error ? true : undefined}
+          aria-describedby={error ? errorId : undefined}
         />
         {isPasswordField && (
           <button
             type="button"
             onClick={togglePasswordVisibility}
             className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-            aria-label={isPasswordVisible ? 'Hide password' : 'Show password'}
+            aria-label={isPasswordVisible ? messages.hidePassword : messages.showPassword}
           >
             {isPasswordVisible ? <EyeOff size={20} /> : <Eye size={20} />}
           </button>
         )}
       </div>
-      <ErrorMessage error={errors?.[name]} />
+      <ErrorMessage error={error} id={errorId} />
     </>
   )
 }
@@ -339,6 +357,9 @@ function Textarea({
     className,
   )
 
+  const error = errors?.[name]
+  const errorId = `${forId}-error`
+
   return (
     <>
       <textarea
@@ -347,8 +368,11 @@ function Textarea({
         id={forId}
         rows={4}
         {...rest}
+        aria-required={required || undefined}
+        aria-invalid={error ? true : undefined}
+        aria-describedby={error ? errorId : undefined}
       />
-      <ErrorMessage error={errors?.[name]} />
+      <ErrorMessage error={error} id={errorId} />
     </>
   )
 }
@@ -356,13 +380,19 @@ function Textarea({
 function FormSelect({
   name,
   options,
-  placeholder = 'Select an option',
+  placeholder,
   required = false,
   className,
   ...rest
 }: SelectProps) {
-  const { control, errors } = useFormContext()
+  const { control, errors, messages } = useFormContext()
   const { forId } = useFieldContext()
+
+  // jiin: 넘긴 placeholder가 있으면 그대로, 없으면 locale 기본 문구를 쓴다
+  const resolvedPlaceholder = placeholder ?? messages.selectPlaceholder
+
+  const error = errors?.[name]
+  const errorId = `${forId}-error`
 
   return (
     <>
@@ -377,8 +407,15 @@ function FormSelect({
             value={field.value || ''}
             {...rest}
           >
-            <SelectKit.Trigger className={className} id={forId}>
-              <SelectKit.Value placeholder={placeholder} />
+            {/* jiin: Radix Trigger는 버튼이므로 aria-*를 그대로 전달해 필수/에러 상태를 SR에 노출 */}
+            <SelectKit.Trigger
+              className={className}
+              id={forId}
+              aria-required={required || undefined}
+              aria-invalid={error ? true : undefined}
+              aria-describedby={error ? errorId : undefined}
+            >
+              <SelectKit.Value placeholder={resolvedPlaceholder} />
             </SelectKit.Trigger>
             <SelectKit.Content>
               {options.map((option) => (
@@ -394,7 +431,7 @@ function FormSelect({
           </SelectKit.Root>
         )}
       />
-      <ErrorMessage error={errors?.[name]} />
+      <ErrorMessage error={error} id={errorId} />
     </>
   )
 }
