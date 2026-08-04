@@ -17,21 +17,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: pnpm/action-setup@v4
-        with:
-          version: 11
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-          registry-url: 'https://registry.npmjs.org'
-          cache: 'pnpm'
-
-      # jiin: OIDC 인증은 npm 11.5+ 필요 (node 22 번들 npm은 10.x)
-      - name: Update npm for OIDC support
-        run: npm install -g npm@latest
-
+      # jiin: 스킵 시 pnpm store가 없어 setup-node의 캐시 저장이 실패하므로 버전 확인이 가장 먼저 와야 한다.
       - name: Check if version is already published
         id: version
         run: |
@@ -44,6 +30,24 @@ jobs:
             echo "새 버전($VERSION) — 배포 진행"
             echo "publish=true" >> "$GITHUB_OUTPUT"
           fi
+
+      - uses: pnpm/action-setup@v4
+        if: steps.version.outputs.publish == 'true'
+        with:
+          version: 11
+
+      - name: Setup Node.js
+        if: steps.version.outputs.publish == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          registry-url: 'https://registry.npmjs.org'
+          cache: 'pnpm'
+
+      # jiin: OIDC 인증은 npm 11.5+ 필요 (node 22 번들 npm은 10.x)
+      - name: Update npm for OIDC support
+        if: steps.version.outputs.publish == 'true'
+        run: npm install -g npm@latest
 
       - name: Install dependencies
         if: steps.version.outputs.publish == 'true'
