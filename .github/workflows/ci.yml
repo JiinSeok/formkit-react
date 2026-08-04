@@ -12,7 +12,8 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [20, 22]
+        # jiin: pnpm 11이 Node 22.13+ 를 요구해 20에서는 설치 단계가 실패한다.
+        node-version: [22, 24]
 
     steps:
       - uses: actions/checkout@v4
