@@ -62,7 +62,7 @@ export interface LegendProps extends ComponentProps {
 
 export interface InputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'type' | 'name'> {
   name: string
-  type?: 'text' | 'email' | 'password' | 'number' | 'tel' | 'url' | 'date' | 'time' | 'datetime-local'
+  type?: 'text' | 'search' | 'email' | 'password' | 'number' | 'tel' | 'url' | 'date' | 'time' | 'datetime-local'
   required?: boolean
   minLength?: number
   maxLength?: number

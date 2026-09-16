@@ -31,6 +31,19 @@ describe('FormKit', () => {
     expect(handleSubmit.mock.calls[0][0]).toEqual({ email: 'user@example.com' })
   })
 
+  it('search Input을 렌더링한다', () => {
+    render(
+      <FormKit.Root formId="search" onSubmit={vi.fn()}>
+        <FormKit.Field htmlFor="query">
+          <FormKit.Label>찾기</FormKit.Label>
+          <FormKit.Input name="query" type="search" />
+        </FormKit.Field>
+      </FormKit.Root>,
+    )
+
+    expect(screen.getByLabelText('찾기')).toHaveAttribute('type', 'search')
+  })
+
   it('zod 스키마 검증에 실패하면 제출되지 않고 에러 메시지를 보여준다', async () => {
     const user = userEvent.setup()
     const handleSubmit = vi.fn()
