@@ -289,4 +289,36 @@ describe('FormKit', () => {
     expect(handleSubmit.mock.calls[0][0]).toEqual({ facility: 'welfare' })
     expect(handleValueChange).toHaveBeenCalledWith('welfare')
   })
+
+  it('중첩 이름 입력칸의 Zod 오류에 aria-invalid 와 오류 문구를 붙인다', async () => {
+    const user = userEvent.setup()
+    const schema = z.object({
+      questions: z.array(
+        z.object({ prompt: z.string().min(1, '문제 글을 적어 주세요') }),
+      ),
+    })
+
+    render(
+      <FormKit.Root
+        formId="nested"
+        schema={schema}
+        defaultValues={{ questions: [{ prompt: '' }] }}
+        onSubmit={vi.fn()}
+      >
+        <FormKit.Field>
+          <FormKit.Label>문제 글</FormKit.Label>
+          <FormKit.Input name="questions.0.prompt" />
+        </FormKit.Field>
+        <FormKit.SubmitButton>저장</FormKit.SubmitButton>
+      </FormKit.Root>,
+    )
+
+    await user.click(screen.getByRole('button', { name: '저장' }))
+
+    expect(await screen.findByText('문제 글을 적어 주세요')).toBeInTheDocument()
+    expect(screen.getByRole('textbox')).toHaveAttribute(
+      'aria-invalid',
+      'true',
+    )
+  })
 })

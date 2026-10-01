@@ -32,6 +32,7 @@ import {
   RegisterOptions,
   useForm,
   Controller,
+  get,
 } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Eye, EyeOff } from 'lucide-react'
@@ -360,7 +361,7 @@ function Input({
     rules.validate = (value) => value === confirmInputValue
   }
 
-  const error = errors?.[name]
+  const error = get(errors, name)
   const errorId = `${forId}-error`
 
   return (
@@ -412,7 +413,7 @@ function Textarea({
   const { register, errors } = useFormContext()
   const { forId, descriptionId, hasDescription } = useFieldContext()
 
-  const error = errors?.[name]
+  const error = get(errors, name)
   const errorId = `${forId}-error`
 
   return (
@@ -448,7 +449,7 @@ function FormSelect({
   // jiin: 넘긴 placeholder가 있으면 그대로, 없으면 locale 기본 문구를 쓴다
   const resolvedPlaceholder = placeholder ?? messages.selectPlaceholder
 
-  const error = errors?.[name]
+  const error = get(errors, name)
   const errorId = `${forId}-error`
 
   return (
