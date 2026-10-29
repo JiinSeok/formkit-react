@@ -90,9 +90,9 @@
     "terser": "^5.44.0",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.60.1",
-    "vite": "^8.0.16",
+    "vite": "^8.3.5",
     "vite-plugin-dts": "^5.0.2",
-    "vitest": "^4.1.8",
+    "vitest": "^4.1.12",
     "zod": "4.4.3"
   },
   "engines": {
