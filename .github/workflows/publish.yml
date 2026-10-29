@@ -15,7 +15,7 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       # jiin: 스킵 시 pnpm store가 없어 setup-node의 캐시 저장이 실패하므로 버전 확인이 가장 먼저 와야 한다.
       - name: Check if version is already published
@@ -31,14 +31,14 @@ jobs:
             echo "publish=true" >> "$GITHUB_OUTPUT"
           fi
 
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v6
         if: steps.version.outputs.publish == 'true'
         with:
           version: 11
 
       - name: Setup Node.js
         if: steps.version.outputs.publish == 'true'
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: '22'
           registry-url: 'https://registry.npmjs.org'
