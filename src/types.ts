@@ -1,18 +1,20 @@
-import type { ReactNode, ButtonHTMLAttributes, HTMLAttributes } from 'react'
+import type { ButtonHTMLAttributes, HTMLAttributes, ReactNode } from 'react'
 import type {
-  UseFormWatch,
-  UseFormGetValues,
-  UseFormGetFieldState,
-  UseFormSetValue,
-  FieldErrors,
-  UseFormReset,
-  UseFormRegister,
-  UseFormSetFocus,
   Control,
-  SubmitHandler,
+  FieldErrors,
   RegisterOptions,
+  SubmitHandler,
+  UseFormGetFieldState,
+  UseFormGetValues,
+  UseFormRegister,
+  UseFormReset,
+  UseFormSetFocus,
+  UseFormSetValue,
+  UseFormWatch,
 } from 'react-hook-form'
+
 import type { ZodSchema } from 'zod'
+
 import type { FormLocale, FormMessages } from './messages'
 
 export interface FormContextProps {
@@ -60,9 +62,22 @@ export interface LegendProps extends ComponentProps {
   required?: boolean
 }
 
-export interface InputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'type' | 'name'> {
+export interface InputProps extends Omit<
+  React.InputHTMLAttributes<HTMLInputElement>,
+  'type' | 'name'
+> {
   name: string
-  type?: 'text' | 'search' | 'email' | 'password' | 'number' | 'tel' | 'url' | 'date' | 'time' | 'datetime-local'
+  type?:
+    | 'text'
+    | 'search'
+    | 'email'
+    | 'password'
+    | 'number'
+    | 'tel'
+    | 'url'
+    | 'date'
+    | 'time'
+    | 'datetime-local'
   required?: boolean
   minLength?: number
   maxLength?: number
@@ -73,7 +88,10 @@ export interface InputProps extends Omit<React.InputHTMLAttributes<HTMLInputElem
   validate?: RegisterOptions['validate']
 }
 
-export interface TextareaProps extends Omit<React.TextareaHTMLAttributes<HTMLTextAreaElement>, 'name'> {
+export interface TextareaProps extends Omit<
+  React.TextareaHTMLAttributes<HTMLTextAreaElement>,
+  'name'
+> {
   name: string
   required?: boolean
   minLength?: number

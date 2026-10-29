@@ -56,24 +56,24 @@ import '@jiin.seok/formkit-react/styles.css'
 import FormKit from '@jiin.seok/formkit-react'
 
 function LoginForm() {
-  const handleSubmit = (data) => {
+  const handleSubmit = data => {
     console.log('폼 데이터:', data)
   }
 
   return (
     <FormKit.Root formId="login" onSubmit={handleSubmit}>
       <FormKit.Title>로그인</FormKit.Title>
-      
+
       <FormKit.Field>
         <FormKit.Label>이메일</FormKit.Label>
         <FormKit.Input name="email" type="email" required />
       </FormKit.Field>
-      
+
       <FormKit.Field>
         <FormKit.Label>비밀번호</FormKit.Label>
         <FormKit.Input name="password" type="password" required />
       </FormKit.Field>
-      
+
       <FormKit.SubmitButton>로그인</FormKit.SubmitButton>
     </FormKit.Root>
   )
@@ -88,30 +88,26 @@ import { z } from 'zod'
 
 const loginSchema = z.object({
   email: z.string().email('유효하지 않은 이메일 주소입니다'),
-  password: z.string().min(8, '비밀번호는 최소 8자 이상이어야 합니다')
+  password: z.string().min(8, '비밀번호는 최소 8자 이상이어야 합니다'),
 })
 
 function LoginForm() {
-  const handleSubmit = (data) => {
+  const handleSubmit = data => {
     console.log('검증된 데이터:', data)
   }
 
   return (
-    <FormKit.Root 
-      formId="login" 
-      schema={loginSchema} 
-      onSubmit={handleSubmit}
-    >
+    <FormKit.Root formId="login" schema={loginSchema} onSubmit={handleSubmit}>
       <FormKit.Field>
         <FormKit.Label>이메일</FormKit.Label>
         <FormKit.Input name="email" type="email" />
       </FormKit.Field>
-      
+
       <FormKit.Field>
         <FormKit.Label>비밀번호</FormKit.Label>
         <FormKit.Input name="password" type="password" />
       </FormKit.Field>
-      
+
       <FormKit.SubmitButton>로그인</FormKit.SubmitButton>
     </FormKit.Root>
   )
@@ -134,32 +130,32 @@ function RegistrationForm() {
     <FormKit.Root formId="registration" onSubmit={handleSubmit}>
       <FormKit.Fieldset>
         <FormKit.Legend required>개인 정보</FormKit.Legend>
-        
+
         <FormKit.Field>
           <FormKit.Label>이름</FormKit.Label>
           <FormKit.Input name="fullName" required />
         </FormKit.Field>
-        
+
         <FormKit.Field>
           <FormKit.Label>국가</FormKit.Label>
-          <FormKit.Select 
-            name="country" 
+          <FormKit.Select
+            name="country"
             options={countries}
             placeholder="국가를 선택하세요"
             required
           />
         </FormKit.Field>
-        
+
         <FormKit.Field>
           <FormKit.Label>자기소개</FormKit.Label>
-          <FormKit.Textarea 
-            name="bio" 
+          <FormKit.Textarea
+            name="bio"
             placeholder="간단한 자기소개를 작성해주세요"
             maxLength={500}
           />
         </FormKit.Field>
       </FormKit.Fieldset>
-      
+
       <FormKit.SubmitButton>가입하기</FormKit.SubmitButton>
     </FormKit.Root>
   )
@@ -171,17 +167,20 @@ function RegistrationForm() {
 FormKit은 포괄적인 폼 컴포넌트 세트를 제공합니다:
 
 ### 📝 핵심 컴포넌트
+
 - **FormKit.Root** - 검증 컨텍스트를 포함한 메인 폼 컨테이너
 - **FormKit.Field** - 레이블-입력 연결이 있는 필드 래퍼
 - **FormKit.Fieldset** - 관련된 필드 그룹화
 - **FormKit.Legend** - 필수 표시가 선택적으로 포함된 필드셋 제목
 
 ### 🎨 입력 컴포넌트
+
 - **FormKit.Input** - 비밀번호 토글, 이메일, 숫자 등을 지원하는 텍스트 입력
 - **FormKit.Textarea** - 여러 줄 텍스트 입력
 - **FormKit.Select** - 검색 기능이 있는 드롭다운 선택 (Radix UI 기반)
 
 ### 🏷️ 표시 컴포넌트
+
 - **FormKit.Label** - 필드 레이블
 - **FormKit.Description** - 입력 예시·형식 안내
 - **FormKit.Title** - 폼 제목
@@ -190,6 +189,7 @@ FormKit은 포괄적인 폼 컴포넌트 세트를 제공합니다:
 - **FormKit.Error** - 오류 메시지 표시
 
 ### 🎯 액션 컴포넌트
+
 - **FormKit.SubmitButton** - 로딩 상태가 있는 제출 버튼
 - **FormKit.ResetButton** - 폼을 초기값으로 재설정
 
@@ -199,14 +199,14 @@ FormKit은 포괄적인 폼 컴포넌트 세트를 제공합니다:
 
 모든 자식 컴포넌트에 컨텍스트를 제공하는 메인 폼 컨테이너입니다.
 
-| Prop | Type | 필수 | 설명 |
-|------|------|------|------|
-| formId | string | ✅ | 폼의 고유 식별자 |
-| onSubmit | (data) => void | ✅ | 폼 제출 핸들러 |
-| schema | ZodSchema | ❌ | 검증을 위한 Zod 스키마 |
-| defaultValues | object | ❌ | 기본 폼 값 |
-| locale | `'ko' \| 'en'` | ❌ | 자동 노출 문구(Select placeholder·비밀번호 aria-label)의 기본 언어. 기본값 `'en'` |
-| messages | `Partial<FormMessages>` | ❌ | 개별 문구만 덮어쓰기. `locale` 기본값 위에 얕게 병합됨 |
+| Prop          | Type                    | 필수 | 설명                                                                              |
+| ------------- | ----------------------- | ---- | --------------------------------------------------------------------------------- |
+| formId        | string                  | ✅   | 폼의 고유 식별자                                                                  |
+| onSubmit      | (data) => void          | ✅   | 폼 제출 핸들러                                                                    |
+| schema        | ZodSchema               | ❌   | 검증을 위한 Zod 스키마                                                            |
+| defaultValues | object                  | ❌   | 기본 폼 값                                                                        |
+| locale        | `'ko' \| 'en'`          | ❌   | 자동 노출 문구(Select placeholder·비밀번호 aria-label)의 기본 언어. 기본값 `'en'` |
+| messages      | `Partial<FormMessages>` | ❌   | 개별 문구만 덮어쓰기. `locale` 기본값 위에 얕게 병합됨                            |
 
 ```tsx
 // 폼 전체의 기본 문구를 한국어로
@@ -228,25 +228,26 @@ FormKit은 포괄적인 폼 컴포넌트 세트를 제공합니다:
 
 자동 레이블-입력 연결이 있는 폼 입력용 컨테이너입니다.
 
-| Prop | Type | 기본값 | 설명 |
-|------|------|--------|------|
-| isInline | boolean | false | 레이블과 입력을 가로로 표시 |
-| hidden | boolean | false | 필드 숨기기 |
-| htmlFor | string | auto | 레이블-입력 연결을 위한 커스텀 ID |
+| Prop     | Type    | 기본값 | 설명                              |
+| -------- | ------- | ------ | --------------------------------- |
+| isInline | boolean | false  | 레이블과 입력을 가로로 표시       |
+| hidden   | boolean | false  | 필드 숨기기                       |
+| htmlFor  | string  | auto   | 레이블-입력 연결을 위한 커스텀 ID |
 
 ### FormKit.Input
 
 내장 기능이 있는 향상된 입력 컴포넌트입니다.
 
-| Prop | Type | 필수 | 설명 |
-|------|------|------|------|
-| name | string | ✅ | 필드 이름 |
-| type | string | ❌ | 입력 타입 (text, email, password 등) |
-| required | boolean | ❌ | 필드를 필수로 표시 |
-| minLength | number | ❌ | 최소 문자 길이 |
-| maxLength | number | ❌ | 최대 문자 길이 |
+| Prop      | Type    | 필수 | 설명                                 |
+| --------- | ------- | ---- | ------------------------------------ |
+| name      | string  | ✅   | 필드 이름                            |
+| type      | string  | ❌   | 입력 타입 (text, email, password 등) |
+| required  | boolean | ❌   | 필드를 필수로 표시                   |
+| minLength | number  | ❌   | 최소 문자 길이                       |
+| maxLength | number  | ❌   | 최대 문자 길이                       |
 
 **기능:**
+
 - 🔒 `type="password"`에 대한 자동 비밀번호 가시성 토글
 - ✅ 확인 필드에 대한 자동 검증 (예: `confirmPassword`)
 - 🎯 완전한 TypeScript 지원
@@ -255,52 +256,52 @@ FormKit은 포괄적인 폼 컴포넌트 세트를 제공합니다:
 
 Radix UI를 사용한 드롭다운 선택 컴포넌트입니다.
 
-| Prop | Type | 필수 | 설명 |
-|------|------|------|------|
-| name | string | ✅ | 필드 이름 |
-| options | Array<{value, label}> | ✅ | 선택 옵션 |
-| placeholder | string | ❌ | 플레이스홀더 텍스트. 넘기지 않으면 `FormKit.Root`의 `locale`에 맞는 기본값 사용 |
-| required | boolean | ❌ | 필드를 필수로 표시 |
+| Prop        | Type                  | 필수 | 설명                                                                            |
+| ----------- | --------------------- | ---- | ------------------------------------------------------------------------------- |
+| name        | string                | ✅   | 필드 이름                                                                       |
+| options     | Array<{value, label}> | ✅   | 선택 옵션                                                                       |
+| placeholder | string                | ❌   | 플레이스홀더 텍스트. 넘기지 않으면 `FormKit.Root`의 `locale`에 맞는 기본값 사용 |
+| required    | boolean               | ❌   | 필드를 필수로 표시                                                              |
 
 ### FormKit.Textarea
 
 여러 줄 텍스트 입력 컴포넌트입니다.
 
-| Prop | Type | 필수 | 설명 |
-|------|------|------|------|
-| name | string | ✅ | 필드 이름 |
-| required | boolean | ❌ | 필드를 필수로 표시 |
-| minLength | number | ❌ | 최소 문자 길이 |
-| maxLength | number | ❌ | 최대 문자 길이 |
-| rows | number | ❌ | 표시되는 텍스트 줄 수 (기본값: 4) |
+| Prop      | Type    | 필수 | 설명                              |
+| --------- | ------- | ---- | --------------------------------- |
+| name      | string  | ✅   | 필드 이름                         |
+| required  | boolean | ❌   | 필드를 필수로 표시                |
+| minLength | number  | ❌   | 최소 문자 길이                    |
+| maxLength | number  | ❌   | 최대 문자 길이                    |
+| rows      | number  | ❌   | 표시되는 텍스트 줄 수 (기본값: 4) |
 
 ### FormKit.Fieldset
 
 관련된 폼 필드를 함께 그룹화합니다.
 
-| Prop | Type | 필수 | 설명 |
-|------|------|------|------|
-| className | string | ❌ | 커스텀 CSS 클래스 |
-| children | ReactNode | ✅ | 자식 컴포넌트 |
+| Prop      | Type      | 필수 | 설명              |
+| --------- | --------- | ---- | ----------------- |
+| className | string    | ❌   | 커스텀 CSS 클래스 |
+| children  | ReactNode | ✅   | 자식 컴포넌트     |
 
 ### FormKit.Legend
 
 필수 표시가 선택적으로 있는 필드셋 제목입니다.
 
-| Prop | Type | 필수 | 설명 |
-|------|------|------|------|
-| required | boolean | ❌ | 빨간색 별표(*) 표시 |
-| className | string | ❌ | 커스텀 CSS 클래스 |
-| children | ReactNode | ✅ | 범례 텍스트 |
+| Prop      | Type      | 필수 | 설명                |
+| --------- | --------- | ---- | ------------------- |
+| required  | boolean   | ❌   | 빨간색 별표(*) 표시 |
+| className | string    | ❌   | 커스텀 CSS 클래스   |
+| children  | ReactNode | ✅   | 범례 텍스트         |
 
 ### FormKit.Label
 
 폼 입력을 위한 접근 가능한 레이블입니다.
 
-| Prop | Type | 필수 | 설명 |
-|------|------|------|------|
-| className | string | ❌ | 커스텀 CSS 클래스 |
-| children | ReactNode | ✅ | 레이블 텍스트 |
+| Prop      | Type      | 필수 | 설명              |
+| --------- | --------- | ---- | ----------------- |
+| className | string    | ❌   | 커스텀 CSS 클래스 |
+| children  | ReactNode | ✅   | 레이블 텍스트     |
 
 ### FormKit.Description
 
@@ -316,65 +317,65 @@ Radix UI를 사용한 드롭다운 선택 컴포넌트입니다.
 </FormKit.Field>
 ```
 
-| Prop | Type | 필수 | 설명 |
-|------|------|------|------|
-| className | string | ❌ | 커스텀 CSS 클래스 |
-| children | ReactNode | ✅ | 설명 텍스트 |
+| Prop      | Type      | 필수 | 설명              |
+| --------- | --------- | ---- | ----------------- |
+| className | string    | ❌   | 커스텀 CSS 클래스 |
+| children  | ReactNode | ✅   | 설명 텍스트       |
 
 ### FormKit.Title
 
 폼 제목/헤더 컴포넌트입니다.
 
-| Prop | Type | 필수 | 설명 |
-|------|------|------|------|
-| className | string | ❌ | 커스텀 CSS 클래스 |
-| children | ReactNode | ✅ | 제목 텍스트 |
+| Prop      | Type      | 필수 | 설명              |
+| --------- | --------- | ---- | ----------------- |
+| className | string    | ❌   | 커스텀 CSS 클래스 |
+| children  | ReactNode | ✅   | 제목 텍스트       |
 
 ### FormKit.SubmitButton
 
 내장 로딩 상태가 있는 제출 버튼입니다.
 
-| Prop | Type | 필수 | 설명 |
-|------|------|------|------|
-| variant | string | ❌ | 버튼 스타일 변형 |
-| disabled | boolean | ❌ | 버튼 비활성화 |
-| className | string | ❌ | 커스텀 CSS 클래스 |
-| children | ReactNode | ✅ | 버튼 텍스트 |
+| Prop      | Type      | 필수 | 설명              |
+| --------- | --------- | ---- | ----------------- |
+| variant   | string    | ❌   | 버튼 스타일 변형  |
+| disabled  | boolean   | ❌   | 버튼 비활성화     |
+| className | string    | ❌   | 커스텀 CSS 클래스 |
+| children  | ReactNode | ✅   | 버튼 텍스트       |
 
 ### FormKit.ResetButton
 
 폼을 초기값으로 재설정합니다.
 
-| Prop | Type | 필수 | 설명 |
-|------|------|------|------|
-| onClick | function | ❌ | 추가 클릭 핸들러 |
-| className | string | ❌ | 커스텀 CSS 클래스 |
-| children | ReactNode | ✅ | 버튼 텍스트 |
+| Prop      | Type      | 필수 | 설명              |
+| --------- | --------- | ---- | ----------------- |
+| onClick   | function  | ❌   | 추가 클릭 핸들러  |
+| className | string    | ❌   | 커스텀 CSS 클래스 |
+| children  | ReactNode | ✅   | 버튼 텍스트       |
 
 ### FormKit.Wrapper
 
 커스텀 레이아웃용 컨테이너 컴포넌트입니다.
 
-| Prop | Type | 필수 | 설명 |
-|------|------|------|------|
-| className | string | ❌ | 커스텀 CSS 클래스 |
-| children | ReactNode | ✅ | 자식 컴포넌트 |
+| Prop      | Type      | 필수 | 설명              |
+| --------- | --------- | ---- | ----------------- |
+| className | string    | ❌   | 커스텀 CSS 클래스 |
+| children  | ReactNode | ✅   | 자식 컴포넌트     |
 
 ### FormKit.Unit
 
 입력 필드 옆에 단위를 표시합니다.
 
-| Prop | Type | 필수 | 설명 |
-|------|------|------|------|
-| unit | string | ✅ | 단위 텍스트 (예: "원", "kg", "%") |
+| Prop | Type   | 필수 | 설명                              |
+| ---- | ------ | ---- | --------------------------------- |
+| unit | string | ✅   | 단위 텍스트 (예: "원", "kg", "%") |
 
 ### FormKit.Error
 
 검증 오류 메시지를 표시합니다.
 
-| Prop | Type | 필수 | 설명 |
-|------|------|------|------|
-| error | FieldError | ❌ | react-hook-form의 오류 객체 |
+| Prop  | Type       | 필수 | 설명                        |
+| ----- | ---------- | ---- | --------------------------- |
+| error | FieldError | ❌   | react-hook-form의 오류 객체 |
 
 ## 🎨 스타일링
 
@@ -420,13 +421,13 @@ Tailwind를 쓰지 않는 앱이면 평범한 CSS 클래스를 넘겨도 같습�
 ## 🧪 테스팅
 
 ```tsx
+import FormKit from '@jiin.seok/formkit-react'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import FormKit from '@jiin.seok/formkit-react'
 
 test('폼 데이터 제출', async () => {
   const handleSubmit = jest.fn()
-  
+
   render(
     <FormKit.Root formId="test" onSubmit={handleSubmit}>
       <FormKit.Field>
@@ -435,10 +436,10 @@ test('폼 데이터 제출', async () => {
       <FormKit.SubmitButton>제출</FormKit.SubmitButton>
     </FormKit.Root>
   )
-  
+
   await userEvent.type(screen.getByRole('textbox'), 'john')
   await userEvent.click(screen.getByRole('button'))
-  
+
   expect(handleSubmit).toHaveBeenCalledWith({ username: 'john' })
 })
 ```

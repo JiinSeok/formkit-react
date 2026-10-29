@@ -1,8 +1,8 @@
 // jiin: test 옵션을 쓰려면 vite가 아닌 vitest/config에서 defineConfig를 가져와야 타입이 맞음
-import { defineConfig } from 'vitest/config'
 import react from '@vitejs/plugin-react'
-import dts from 'vite-plugin-dts'
 import { resolve } from 'path'
+import dts from 'vite-plugin-dts'
+import { defineConfig } from 'vitest/config'
 
 export default defineConfig({
   plugins: [
@@ -18,7 +18,7 @@ export default defineConfig({
       entry: resolve(__dirname, 'src/index.ts'),
       name: 'FormKitReact',
       formats: ['es', 'cjs'],
-      fileName: (format) => `index.${format === 'es' ? 'mjs' : 'js'}`,
+      fileName: format => `index.${format === 'es' ? 'mjs' : 'js'}`,
     },
     rollupOptions: {
       // jiin: 런타임 의존성을 번들에 인라인하면 소비자 앱과 react-hook-form 인스턴스가

@@ -1,8 +1,30 @@
 'use client'
 
-import { Button } from './Button'
-import { SelectKit } from './Select'
 import {
+  createContext,
+  forwardRef,
+  useContext,
+  useEffect,
+  useId,
+  useImperativeHandle,
+  useState,
+} from 'react'
+import {
+  Controller,
+  FieldError,
+  FieldErrorsImpl,
+  Merge,
+  RegisterOptions,
+  get,
+  useForm,
+} from 'react-hook-form'
+
+import { zodResolver } from '@hookform/resolvers/zod'
+import { Eye, EyeOff } from 'lucide-react'
+
+import { DEFAULT_LOCALE, FORM_MESSAGES } from '../messages'
+import {
+  ComponentProps,
   FieldProps,
   FormContextProps,
   FormProps,
@@ -10,32 +32,12 @@ import {
   FormSubmitButtonProps,
   InputProps,
   LegendProps,
-  TextareaProps,
   SelectProps,
-  ComponentProps,
+  TextareaProps,
 } from '../types'
 import { cn } from '../utils/cn'
-import { DEFAULT_LOCALE, FORM_MESSAGES } from '../messages'
-import {
-  createContext,
-  useContext,
-  useEffect,
-  useId,
-  useState,
-  forwardRef,
-  useImperativeHandle,
-} from 'react'
-import {
-  FieldError,
-  FieldErrorsImpl,
-  Merge,
-  RegisterOptions,
-  useForm,
-  Controller,
-  get,
-} from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { Eye, EyeOff } from 'lucide-react'
+import { Button } from './Button'
+import { SelectKit } from './Select'
 
 const FormContext = createContext<FormContextProps | undefined>(undefined)
 
@@ -65,83 +67,87 @@ const useFieldContext = () => {
   return context
 }
 
-const Form = forwardRef<any, FormProps>(({
-  children,
-  className,
-  formId,
-  onSubmit,
-  defaultValues = {},
-  locale = DEFAULT_LOCALE,
-  messages: messagesOverride,
-  ...rest
-}, ref) => {
+const Form = forwardRef<any, FormProps>(
+  (
+    {
+      children,
+      className,
+      formId,
+      onSubmit,
+      defaultValues = {},
+      locale = DEFAULT_LOCALE,
+      messages: messagesOverride,
+      ...rest
+    },
+    ref
+  ) => {
+    // jiin: locale 기본 문구 위에 개별 override를 얕게 덮어써 최종 문구를 만든다
+    const messages = { ...FORM_MESSAGES[locale], ...messagesOverride }
 
-  // jiin: locale 기본 문구 위에 개별 override를 얕게 덮어써 최종 문구를 만든다
-  const messages = { ...FORM_MESSAGES[locale], ...messagesOverride }
+    const hasSchema = 'schema' in rest && rest.schema
+    const formOptions = hasSchema
+      ? {
+          resolver: zodResolver(rest.schema as any),
+          mode: 'onChange' as const,
+          defaultValues,
+        }
+      : {
+          mode: 'onChange' as const,
+          defaultValues,
+        }
 
-  const hasSchema = 'schema' in rest && rest.schema
-  const formOptions = hasSchema
-    ? {
-        resolver: zodResolver(rest.schema as any),
-        mode: 'onChange' as const,
-        defaultValues,
-      }
-    : {
-        mode: 'onChange' as const,
-        defaultValues,
-      }
+    const {
+      watch,
+      getValues,
+      getFieldState,
+      setValue,
+      formState: { errors, isValid, isSubmitting },
+      reset,
+      handleSubmit,
+      register,
+      setFocus,
+      control,
+    } = useForm(formOptions)
 
-  const {
-    watch,
-    getValues,
-    getFieldState,
-    setValue,
-    formState: { errors, isValid, isSubmitting },
-    reset,
-    handleSubmit,
-    register,
-    setFocus,
-    control,
-  } = useForm(formOptions)
+    useImperativeHandle(ref, () => ({
+      setValue,
+      getValues,
+      reset,
+      setFocus,
+    }))
 
-  useImperativeHandle(ref, () => ({
-    setValue,
-    getValues,
-    reset,
-    setFocus,
-  }))
-
-  return (
-    <FormContext.Provider
-      value={{
-        formId,
-        onSubmit,
-        watch,
-        getValues,
-        getFieldState,
-        setValue,
-        errors,
-        isValid,
-        isSubmitting,
-        reset,
-        register,
-        setFocus,
-        control,
-        messages,
-      }}
-    >
-      <form
-        id={formId}
-        onSubmit={handleSubmit(onSubmit)}
-        data-formkit="form"
-        className={cn(className)}
-        {...(hasSchema ? {} : rest)}
+    return (
+      <FormContext.Provider
+        value={{
+          formId,
+          onSubmit,
+          watch,
+          getValues,
+          getFieldState,
+          setValue,
+          errors,
+          isValid,
+          isSubmitting,
+          reset,
+          register,
+          setFocus,
+          control,
+          messages,
+        }}
       >
-        {children}
-      </form>
-    </FormContext.Provider>
-  )
-})
+        <form
+          id={formId}
+          onSubmit={handleSubmit(onSubmit)}
+          data-formkit="form"
+          className={cn(className)}
+          {...(hasSchema ? {} : rest)}
+        >
+          {children}
+        </form>
+      </FormContext.Provider>
+    )
+  }
+)
 
 Form.displayName = 'Form'
 
@@ -153,12 +159,7 @@ function Title({ children, className }: ComponentProps) {
   )
 }
 
-function FormResetButton({
-  children,
-  className,
-  onClick,
-  ...rest
-}: FormResetButtonProps) {
+function FormResetButton({ children, className, onClick, ...rest }: FormResetButtonProps) {
   const { reset } = useFormContext()
   return (
     <Button
@@ -175,9 +176,22 @@ function FormResetButton({
   )
 }
 
-function FormSubmitButton({ children, variant = 'default', className, disabled, ...rest }: FormSubmitButtonProps) {
+function FormSubmitButton({
+  children,
+  variant = 'default',
+  className,
+  disabled,
+  ...rest
+}: FormSubmitButtonProps) {
   return (
-    <Button type={'submit'} variant={variant} size={'lg'} className={className} disabled={disabled} {...rest}>
+    <Button
+      type={'submit'}
+      variant={variant}
+      size={'lg'}
+      className={className}
+      disabled={disabled}
+      {...rest}
+    >
       {children}
     </Button>
   )
@@ -204,13 +218,7 @@ function Legend({ children, className, required }: LegendProps) {
   )
 }
 
-function Field({
-  children,
-  className,
-  htmlFor = '',
-  isInline = false,
-  hidden,
-}: FieldProps) {
+function Field({ children, className, htmlFor = '', isInline = false, hidden }: FieldProps) {
   // jiin: effect에서 random id를 만들면 SSR에서 id가 비고 첫 렌더에 label 연결이 누락됨
   // — React 18+의 useId는 서버/클라이언트 모두 안정적인 id를 보장
   const generatedId = useId()
@@ -253,12 +261,7 @@ function Description({ children, className }: ComponentProps) {
   }, [setHasDescription])
 
   return (
-    <p
-      id={descriptionId}
-      aria-hidden="true"
-      data-formkit="description"
-      className={cn(className)}
-    >
+    <p id={descriptionId} aria-hidden="true" data-formkit="description" className={cn(className)}>
       {children}
     </p>
   )
@@ -269,7 +272,7 @@ function describedBy(
   descriptionId: string,
   hasDescription: boolean,
   errorId: string,
-  hasError: boolean,
+  hasError: boolean
 ) {
   const ids = []
   if (hasDescription) ids.push(descriptionId)
@@ -294,28 +297,18 @@ function Wrapper({ children, className }: ComponentProps) {
 }
 
 function Unit({ unit }: { unit: string }) {
-  return (
-    <span data-formkit="unit">{unit}</span>
-  )
+  return <span data-formkit="unit">{unit}</span>
 }
 
 type FieldErrorEntry = FieldError | Merge<FieldErrorsImpl, any> | undefined
 
-function ErrorMessage({
-  error,
-  id,
-}: {
-  error: FieldErrorEntry
-  id?: string
-}) {
+function ErrorMessage({ error, id }: { error: FieldErrorEntry; id?: string }) {
   if (!error) return null
   // jiin: role="alert"(=암묵적 aria-live="assertive")로 동적으로 나타난 에러를 SR이 즉시 읽게 한다.
   // aria-describedby로 필드와 연결하기 위해 id를 받는다.
   return (
     <p id={id} role="alert" aria-live="assertive" data-formkit="error">
-      {typeof error === 'object' &&
-        'message' in error &&
-        (error.message as string)}
+      {typeof error === 'object' && 'message' in error && (error.message as string)}
     </p>
   )
 }
@@ -342,17 +335,12 @@ function Input({
     validate,
   }
 
-
   const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false)
   const isPasswordField = type === 'password'
-  const inputType = isPasswordField
-    ? isPasswordVisible
-      ? 'text'
-      : 'password'
-    : type
+  const inputType = isPasswordField ? (isPasswordVisible ? 'text' : 'password') : type
 
   const togglePasswordVisibility = () => {
-    setIsPasswordVisible((prev) => !prev)
+    setIsPasswordVisible(prev => !prev)
   }
 
   const isConfirm = name.startsWith('confirm')
@@ -360,7 +348,7 @@ function Input({
   const confirmInputValue = watch(confirmInputName)
 
   if (isConfirm) {
-    rules.validate = (value) => value === confirmInputValue
+    rules.validate = value => value === confirmInputValue
   }
 
   const error = get<typeof errors, FieldErrorEntry>(errors, name)
@@ -466,7 +454,7 @@ function FormSelect({
             {...rest}
             // jiin: 넘어온 onValueChange를 그대로 Root에 흘리면 field.onChange를 덮어써
             // 고른 값이 폼에 들어가지 않는다 — 폼에 먼저 넣고 바깥에도 알린다
-            onValueChange={(value) => {
+            onValueChange={value => {
               field.onChange(value)
               onValueChange?.(value)
             }}
@@ -483,12 +471,8 @@ function FormSelect({
               <SelectKit.Value placeholder={resolvedPlaceholder} />
             </SelectKit.Trigger>
             <SelectKit.Content>
-              {options.map((option) => (
-                <SelectKit.Item
-                  key={option.value}
-                  value={option.value}
-                  disabled={option.disabled}
-                >
+              {options.map(option => (
+                <SelectKit.Item key={option.value} value={option.value} disabled={option.disabled}>
                   {option.label}
                 </SelectKit.Item>
               ))}

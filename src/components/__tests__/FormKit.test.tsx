@@ -1,7 +1,8 @@
-import { describe, it, expect, vi } from 'vitest'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { describe, expect, it, vi } from 'vitest'
 import { z } from 'zod'
+
 import FormKitDefault from '../../index'
 import { FormKit } from '../FormKit'
 
@@ -21,7 +22,7 @@ describe('FormKit', () => {
           <FormKit.Input name="email" type="email" />
         </FormKit.Field>
         <FormKit.SubmitButton>로그인</FormKit.SubmitButton>
-      </FormKit.Root>,
+      </FormKit.Root>
     )
 
     await user.type(screen.getByLabelText('이메일'), 'user@example.com')
@@ -38,7 +39,7 @@ describe('FormKit', () => {
           <FormKit.Label>찾기</FormKit.Label>
           <FormKit.Input name="query" type="search" />
         </FormKit.Field>
-      </FormKit.Root>,
+      </FormKit.Root>
     )
 
     expect(screen.getByLabelText('찾기')).toHaveAttribute('type', 'search')
@@ -58,15 +59,13 @@ describe('FormKit', () => {
           <FormKit.Input name="email" />
         </FormKit.Field>
         <FormKit.SubmitButton>로그인</FormKit.SubmitButton>
-      </FormKit.Root>,
+      </FormKit.Root>
     )
 
     await user.type(screen.getByLabelText('이메일'), '이메일아님')
     await user.click(screen.getByRole('button', { name: '로그인' }))
 
-    expect(
-      await screen.findByText('유효하지 않은 이메일 주소입니다'),
-    ).toBeInTheDocument()
+    expect(await screen.findByText('유효하지 않은 이메일 주소입니다')).toBeInTheDocument()
     expect(handleSubmit).not.toHaveBeenCalled()
   })
 
@@ -81,7 +80,7 @@ describe('FormKit', () => {
         <FormKit.Field htmlFor="genre">
           <FormKit.Select name="genre" options={genreOptions} />
         </FormKit.Field>
-      </FormKit.Root>,
+      </FormKit.Root>
     )
 
     expect(screen.getByText('Select an option')).toBeInTheDocument()
@@ -93,7 +92,7 @@ describe('FormKit', () => {
         <FormKit.Field htmlFor="genre">
           <FormKit.Select name="genre" options={genreOptions} />
         </FormKit.Field>
-      </FormKit.Root>,
+      </FormKit.Root>
     )
 
     expect(screen.getByText('옵션을 선택하세요')).toBeInTheDocument()
@@ -105,7 +104,7 @@ describe('FormKit', () => {
         <FormKit.Field htmlFor="genre">
           <FormKit.Select name="genre" options={genreOptions} placeholder="장르를 골라주세요" />
         </FormKit.Field>
-      </FormKit.Root>,
+      </FormKit.Root>
     )
 
     expect(screen.getByText('장르를 골라주세요')).toBeInTheDocument()
@@ -123,7 +122,7 @@ describe('FormKit', () => {
         <FormKit.Field htmlFor="genre">
           <FormKit.Select name="genre" options={genreOptions} />
         </FormKit.Field>
-      </FormKit.Root>,
+      </FormKit.Root>
     )
 
     expect(screen.getByText('선택 안 함')).toBeInTheDocument()
@@ -136,7 +135,7 @@ describe('FormKit', () => {
           <FormKit.Label>이름</FormKit.Label>
           <FormKit.Input name="name" required />
         </FormKit.Field>
-      </FormKit.Root>,
+      </FormKit.Root>
     )
 
     expect(screen.getByLabelText('이름')).toHaveAttribute('aria-required', 'true')
@@ -149,7 +148,7 @@ describe('FormKit', () => {
           <FormKit.Label>이름</FormKit.Label>
           <FormKit.Input name="name" />
         </FormKit.Field>
-      </FormKit.Root>,
+      </FormKit.Root>
     )
 
     expect(screen.getByLabelText('이름')).not.toHaveAttribute('aria-required')
@@ -168,7 +167,7 @@ describe('FormKit', () => {
           <FormKit.Input name="email" required />
         </FormKit.Field>
         <FormKit.SubmitButton>로그인</FormKit.SubmitButton>
-      </FormKit.Root>,
+      </FormKit.Root>
     )
 
     const input = screen.getByLabelText('이메일')
@@ -193,7 +192,7 @@ describe('FormKit', () => {
           <FormKit.Description>수업에 참여하실 어르신 수</FormKit.Description>
           <FormKit.Input name="headcount" type="number" />
         </FormKit.Field>
-      </FormKit.Root>,
+      </FormKit.Root>
     )
 
     const input = screen.getByRole('spinbutton', { name: '예상 인원' })
@@ -212,7 +211,7 @@ describe('FormKit', () => {
           <FormKit.Description>수업에 참여하실 어르신 수</FormKit.Description>
           <FormKit.Input name="headcount" />
         </FormKit.Field>
-      </FormKit.Root>,
+      </FormKit.Root>
     )
 
     expect(screen.getByText('수업에 참여하실 어르신 수')).toHaveAttribute('aria-hidden', 'true')
@@ -225,7 +224,7 @@ describe('FormKit', () => {
           <FormKit.Label>성명</FormKit.Label>
           <FormKit.Input name="name" />
         </FormKit.Field>
-      </FormKit.Root>,
+      </FormKit.Root>
     )
 
     expect(screen.getByRole('textbox', { name: '성명' })).not.toHaveAttribute('aria-describedby')
@@ -243,7 +242,7 @@ describe('FormKit', () => {
           <FormKit.Input name="email" required />
         </FormKit.Field>
         <FormKit.SubmitButton>로그인</FormKit.SubmitButton>
-      </FormKit.Root>,
+      </FormKit.Root>
     )
 
     const input = screen.getByRole('textbox', { name: '이메일' })
@@ -254,7 +253,7 @@ describe('FormKit', () => {
     const description = screen.getByText('회사 주소를 적어 주세요')
 
     await waitFor(() =>
-      expect(input).toHaveAttribute('aria-describedby', `${description.id} ${alert.id}`),
+      expect(input).toHaveAttribute('aria-describedby', `${description.id} ${alert.id}`)
     )
   })
 
@@ -278,7 +277,7 @@ describe('FormKit', () => {
           />
         </FormKit.Field>
         <FormKit.SubmitButton>보내기</FormKit.SubmitButton>
-      </FormKit.Root>,
+      </FormKit.Root>
     )
 
     await user.click(screen.getByRole('combobox'))
@@ -293,9 +292,7 @@ describe('FormKit', () => {
   it('중첩 이름 입력칸의 Zod 오류에 aria-invalid 와 오류 문구를 붙인다', async () => {
     const user = userEvent.setup()
     const schema = z.object({
-      questions: z.array(
-        z.object({ prompt: z.string().min(1, '문제 글을 적어 주세요') }),
-      ),
+      questions: z.array(z.object({ prompt: z.string().min(1, '문제 글을 적어 주세요') })),
     })
 
     render(
@@ -310,15 +307,12 @@ describe('FormKit', () => {
           <FormKit.Input name="questions.0.prompt" />
         </FormKit.Field>
         <FormKit.SubmitButton>저장</FormKit.SubmitButton>
-      </FormKit.Root>,
+      </FormKit.Root>
     )
 
     await user.click(screen.getByRole('button', { name: '저장' }))
 
     expect(await screen.findByText('문제 글을 적어 주세요')).toBeInTheDocument()
-    expect(screen.getByRole('textbox')).toHaveAttribute(
-      'aria-invalid',
-      'true',
-    )
+    expect(screen.getByRole('textbox')).toHaveAttribute('aria-invalid', 'true')
   })
 })

@@ -1,8 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: [
-    './src/**/*.{js,ts,jsx,tsx}',
-  ],
+  content: ['./src/**/*.{js,ts,jsx,tsx}'],
   theme: {
     extend: {
       // jiin: CSS 변수에 "완전한 색상값"을 담고 유틸은 var()로 그대로 읽는다(hsl() 래퍼 제거).
