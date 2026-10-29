@@ -299,11 +299,13 @@ function Unit({ unit }: { unit: string }) {
   )
 }
 
+type FieldErrorEntry = FieldError | Merge<FieldErrorsImpl, any> | undefined
+
 function ErrorMessage({
   error,
   id,
 }: {
-  error: FieldError | Merge<FieldErrorsImpl, any> | undefined
+  error: FieldErrorEntry
   id?: string
 }) {
   if (!error) return null
@@ -361,7 +363,7 @@ function Input({
     rules.validate = (value) => value === confirmInputValue
   }
 
-  const error = get(errors, name)
+  const error = get<typeof errors, FieldErrorEntry>(errors, name)
   const errorId = `${forId}-error`
 
   return (
@@ -413,7 +415,7 @@ function Textarea({
   const { register, errors } = useFormContext()
   const { forId, descriptionId, hasDescription } = useFieldContext()
 
-  const error = get(errors, name)
+  const error = get<typeof errors, FieldErrorEntry>(errors, name)
   const errorId = `${forId}-error`
 
   return (
@@ -449,7 +451,7 @@ function FormSelect({
   // jiin: 넘긴 placeholder가 있으면 그대로, 없으면 locale 기본 문구를 쓴다
   const resolvedPlaceholder = placeholder ?? messages.selectPlaceholder
 
-  const error = get(errors, name)
+  const error = get<typeof errors, FieldErrorEntry>(errors, name)
   const errorId = `${forId}-error`
 
   return (
