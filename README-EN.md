@@ -5,13 +5,15 @@
 [![npm version](https://img.shields.io/npm/v/@jiin.seok/formkit-react.svg)](https://www.npmjs.com/package/@jiin.seok/formkit-react)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
+[한국어 문서](./README.md)
+
 ## ✨ Features
 
 - 🎯 **Compound Component Pattern** - Clean, composable API
 - 🔄 **React Hook Form Integration** - Performance optimized
 - 🛡️ **Zod Schema Support** - Type-safe validation
 - ♿ **Accessibility First** - ARIA compliant
-- 🎨 **Tailwind CSS Styled** - Beautiful by default
+- 🎨 **Opt-in Default Theme** - Import the stylesheet for a ready-to-use look, or skip it for plain HTML
 - 📝 **TypeScript** - Full type safety
 - 🔒 **Password Toggle** - Built-in visibility toggle
 - 🎛️ **Select Component** - Powered by Radix UI
@@ -29,27 +31,20 @@ pnpm add @jiin.seok/formkit-react
 ### Peer Dependencies
 
 ```bash
-npm install react react-dom
+npm install react react-dom zod
 ```
 
-> `react-hook-form`, `zod`, and `@hookform/resolvers` are installed automatically as package dependencies.
+> `react-hook-form` and `@hookform/resolvers` are installed automatically as package dependencies. `zod` is a peer dependency so that FormKit shares the same Zod instance as your schemas.
 
 ### Import Styles
 
-Import the base stylesheet once at your app entry point (e.g. `main.tsx`, `layout.tsx`).
+To use the default theme, import it once at your app entry point (e.g. `main.tsx`, `layout.tsx`).
 
 ```tsx
 import '@jiin.seok/formkit-react/styles.css'
 ```
 
-Colors are CSS-variable based, so you can theme the library by overriding variables on `:root`.
-
-```css
-:root {
-  --primary: 222.2 47.4% 11.2%; /* hsl values without commas */
-  --destructive: 0 84.2% 60.2%;
-}
-```
+Without this import, components render as plain, unstyled HTML. Skip it if you want to style everything yourself. The stylesheet does not require Tailwind, so it works in any app.
 
 ## 🚀 Quick Start
 
@@ -65,7 +60,7 @@ function LoginForm() {
 
   return (
     <FormKit.Root formId="login" onSubmit={handleSubmit}>
-      <FormKit.Title>Login</FormKit.Title>
+      <FormKit.Title>Sign In</FormKit.Title>
 
       <FormKit.Field>
         <FormKit.Label>Email</FormKit.Label>
@@ -124,9 +119,9 @@ import FormKit from '@jiin.seok/formkit-react'
 
 function RegistrationForm() {
   const countries = [
+    { value: 'kr', label: 'South Korea' },
     { value: 'us', label: 'United States' },
-    { value: 'uk', label: 'United Kingdom' },
-    { value: 'ca', label: 'Canada' },
+    { value: 'jp', label: 'Japan' },
   ]
 
   return (
@@ -168,28 +163,29 @@ FormKit provides a comprehensive set of form components:
 ### 📝 Core Components
 
 - **FormKit.Root** - Main form container with validation context
-- **FormKit.Field** - Field wrapper with label-input association
-- **FormKit.Fieldset** - Group related fields
-- **FormKit.Legend** - Fieldset title with optional required indicator
+- **FormKit.Field** - Field wrapper that links a label to its input
+- **FormKit.Fieldset** - Groups related fields
+- **FormKit.Legend** - Fieldset title with an optional required indicator
 
 ### 🎨 Input Components
 
-- **FormKit.Input** - Text input with password toggle, email, number, etc.
+- **FormKit.Input** - Text input supporting password toggle, email, number, and more
 - **FormKit.Textarea** - Multi-line text input
-- **FormKit.Select** - Dropdown select with search (powered by Radix UI)
+- **FormKit.Select** - Dropdown select (powered by Radix UI)
 
 ### 🏷️ Display Components
 
 - **FormKit.Label** - Field label
+- **FormKit.Description** - Input examples or format hints
 - **FormKit.Title** - Form title
 - **FormKit.Wrapper** - Container for custom layouts
-- **FormKit.Unit** - Display units (e.g., "원", "kg")
+- **FormKit.Unit** - Unit display (e.g. "USD", "kg")
 - **FormKit.Error** - Error message display
 
 ### 🎯 Action Components
 
-- **FormKit.SubmitButton** - Submit button with loading states
-- **FormKit.ResetButton** - Reset form to initial values
+- **FormKit.SubmitButton** - Submit button with loading state
+- **FormKit.ResetButton** - Resets the form to its initial values
 
 ## 📚 API Reference
 
@@ -197,142 +193,178 @@ FormKit provides a comprehensive set of form components:
 
 The main form container that provides context to all child components.
 
-| Prop          | Type           | Required | Description                    |
-| ------------- | -------------- | -------- | ------------------------------ |
-| formId        | string         | ✅       | Unique identifier for the form |
-| onSubmit      | (data) => void | ✅       | Form submission handler        |
-| schema        | ZodSchema      | ❌       | Zod schema for validation      |
-| defaultValues | object         | ❌       | Default form values            |
+| Prop          | Type                    | Required | Description                                                                                             |
+| ------------- | ----------------------- | -------- | ------------------------------------------------------------------------------------------------------- |
+| formId        | string                  | ✅       | Unique identifier for the form                                                                          |
+| onSubmit      | (data) => void          | ✅       | Form submission handler                                                                                 |
+| schema        | ZodSchema               | ❌       | Zod schema for validation                                                                               |
+| defaultValues | object                  | ❌       | Default form values                                                                                     |
+| locale        | `'ko' \| 'en'`          | ❌       | Default language for built-in text (Select placeholder, password toggle aria-label). Defaults to `'en'` |
+| messages      | `Partial<FormMessages>` | ❌       | Overrides individual messages. Shallow-merged on top of the `locale` defaults                           |
+
+```tsx
+// Korean defaults for the whole form
+<FormKit.Root formId="signup" locale="ko" onSubmit={onSubmit}>
+  {/* The default Select placeholder becomes '옵션을 선택하세요' */}
+  <FormKit.Select name="genre" options={options} />
+</FormKit.Root>
+
+// Customize a single message
+<FormKit.Root
+  formId="signup"
+  messages={{ selectPlaceholder: 'Pick a genre' }}
+  onSubmit={onSubmit}
+/>
+```
 
 ### FormKit.Field
 
 Container for form inputs with automatic label-input association.
 
-| Prop     | Type    | Default | Description                           |
-| -------- | ------- | ------- | ------------------------------------- |
-| isInline | boolean | false   | Display label and input horizontally  |
-| hidden   | boolean | false   | Hide the field                        |
-| htmlFor  | string  | auto    | Custom ID for label-input association |
+| Prop     | Type    | Default | Description                               |
+| -------- | ------- | ------- | ----------------------------------------- |
+| isInline | boolean | false   | Display label and input horizontally      |
+| hidden   | boolean | false   | Hide the field                            |
+| htmlFor  | string  | auto    | Custom ID for the label-input association |
 
 ### FormKit.Input
 
 Enhanced input component with built-in features.
 
-| Prop      | Type    | Required | Description                              |
-| --------- | ------- | -------- | ---------------------------------------- |
-| name      | string  | ✅       | Field name                               |
-| type      | string  | ❌       | Input type (text, email, password, etc.) |
-| required  | boolean | ❌       | Mark field as required                   |
-| minLength | number  | ❌       | Minimum character length                 |
-| maxLength | number  | ❌       | Maximum character length                 |
+| Prop      | Type    | Required | Description                         |
+| --------- | ------- | -------- | ----------------------------------- |
+| name      | string  | ✅       | Field name                          |
+| type      | string  | ❌       | Input type (text, email, password…) |
+| required  | boolean | ❌       | Mark the field as required          |
+| minLength | number  | ❌       | Minimum character length            |
+| maxLength | number  | ❌       | Maximum character length            |
 
 **Features:**
 
 - 🔒 Automatic password visibility toggle for `type="password"`
-- ✅ Automatic validation for confirm fields (e.g., `confirmPassword`)
+- ✅ Automatic validation for confirmation fields (e.g. `confirmPassword`)
 - 🎯 Full TypeScript support
 
 ### FormKit.Select
 
-Dropdown select component with Radix UI.
+Dropdown select component built on Radix UI.
 
-| Prop        | Type                  | Required | Description            |
-| ----------- | --------------------- | -------- | ---------------------- |
-| name        | string                | ✅       | Field name             |
-| options     | Array<{value, label}> | ✅       | Select options         |
-| placeholder | string                | ❌       | Placeholder text       |
-| required    | boolean               | ❌       | Mark field as required |
+| Prop        | Type                  | Required | Description                                                                    |
+| ----------- | --------------------- | -------- | ------------------------------------------------------------------------------ |
+| name        | string                | ✅       | Field name                                                                     |
+| options     | Array<{value, label}> | ✅       | Select options                                                                 |
+| placeholder | string                | ❌       | Placeholder text. Falls back to the default for the `locale` of `FormKit.Root` |
+| required    | boolean               | ❌       | Mark the field as required                                                     |
 
 ### FormKit.Textarea
 
 Multi-line text input component.
 
-| Prop      | Type    | Required | Description                               |
-| --------- | ------- | -------- | ----------------------------------------- |
-| name      | string  | ✅       | Field name                                |
-| required  | boolean | ❌       | Mark field as required                    |
-| minLength | number  | ❌       | Minimum character length                  |
-| maxLength | number  | ❌       | Maximum character length                  |
-| rows      | number  | ❌       | Number of visible text lines (default: 4) |
+| Prop      | Type    | Required | Description                         |
+| --------- | ------- | -------- | ----------------------------------- |
+| name      | string  | ✅       | Field name                          |
+| required  | boolean | ❌       | Mark the field as required          |
+| minLength | number  | ❌       | Minimum character length            |
+| maxLength | number  | ❌       | Maximum character length            |
+| rows      | number  | ❌       | Number of visible lines (default 4) |
 
 ### FormKit.Fieldset
 
 Groups related form fields together.
 
-| Prop      | Type      | Required | Description        |
-| --------- | --------- | -------- | ------------------ |
-| className | string    | ❌       | Custom CSS classes |
-| children  | ReactNode | ✅       | Child components   |
+| Prop      | Type      | Required | Description      |
+| --------- | --------- | -------- | ---------------- |
+| className | string    | ❌       | Custom CSS class |
+| children  | ReactNode | ✅       | Child components |
 
 ### FormKit.Legend
 
-Title for a fieldset with optional required indicator.
+Fieldset title with an optional required indicator.
 
-| Prop      | Type      | Required | Description            |
-| --------- | --------- | -------- | ---------------------- |
-| required  | boolean   | ❌       | Shows red asterisk (*) |
-| className | string    | ❌       | Custom CSS classes     |
-| children  | ReactNode | ✅       | Legend text            |
+| Prop      | Type      | Required | Description           |
+| --------- | --------- | -------- | --------------------- |
+| required  | boolean   | ❌       | Show a red asterisk * |
+| className | string    | ❌       | Custom CSS class      |
+| children  | ReactNode | ✅       | Legend text           |
 
 ### FormKit.Label
 
 Accessible label for form inputs.
 
-| Prop      | Type      | Required | Description        |
-| --------- | --------- | -------- | ------------------ |
-| className | string    | ❌       | Custom CSS classes |
-| children  | ReactNode | ✅       | Label text         |
+| Prop      | Type      | Required | Description      |
+| --------- | --------- | -------- | ---------------- |
+| className | string    | ❌       | Custom CSS class |
+| children  | ReactNode | ✅       | Label text       |
+
+### FormKit.Description
+
+A hint that shows input examples or the expected format. Inputs in the same Field point to it with `aria-describedby`, so screen readers read the description when the field gets focus. When an error is shown as well, the input points to both.
+
+The description is not part of the field's accessible name. Field is a `label`, so without this the name would grow into something like "Expected headcount Number of attendees", which gets in the way when scanning a list of fields.
+
+```tsx
+<FormKit.Field>
+  <FormKit.Legend required>Expected headcount</FormKit.Legend>
+  <FormKit.Description>Number of attendees</FormKit.Description>
+  <FormKit.Input name="headcount" type="number" required />
+</FormKit.Field>
+```
+
+| Prop      | Type      | Required | Description      |
+| --------- | --------- | -------- | ---------------- |
+| className | string    | ❌       | Custom CSS class |
+| children  | ReactNode | ✅       | Description text |
 
 ### FormKit.Title
 
 Form title/header component.
 
-| Prop      | Type      | Required | Description        |
-| --------- | --------- | -------- | ------------------ |
-| className | string    | ❌       | Custom CSS classes |
-| children  | ReactNode | ✅       | Title text         |
+| Prop      | Type      | Required | Description      |
+| --------- | --------- | -------- | ---------------- |
+| className | string    | ❌       | Custom CSS class |
+| children  | ReactNode | ✅       | Title text       |
 
 ### FormKit.SubmitButton
 
-Submit button with built-in loading states.
+Submit button with a built-in loading state.
 
 | Prop      | Type      | Required | Description          |
 | --------- | --------- | -------- | -------------------- |
 | variant   | string    | ❌       | Button style variant |
-| disabled  | boolean   | ❌       | Disable button       |
-| className | string    | ❌       | Custom CSS classes   |
+| disabled  | boolean   | ❌       | Disable the button   |
+| className | string    | ❌       | Custom CSS class     |
 | children  | ReactNode | ✅       | Button text          |
 
 ### FormKit.ResetButton
 
-Resets form to initial values.
+Resets the form to its initial values.
 
 | Prop      | Type      | Required | Description              |
 | --------- | --------- | -------- | ------------------------ |
 | onClick   | function  | ❌       | Additional click handler |
-| className | string    | ❌       | Custom CSS classes       |
+| className | string    | ❌       | Custom CSS class         |
 | children  | ReactNode | ✅       | Button text              |
 
 ### FormKit.Wrapper
 
 Container component for custom layouts.
 
-| Prop      | Type      | Required | Description        |
-| --------- | --------- | -------- | ------------------ |
-| className | string    | ❌       | Custom CSS classes |
-| children  | ReactNode | ✅       | Child components   |
+| Prop      | Type      | Required | Description      |
+| --------- | --------- | -------- | ---------------- |
+| className | string    | ❌       | Custom CSS class |
+| children  | ReactNode | ✅       | Child components |
 
 ### FormKit.Unit
 
-Displays units next to input fields.
+Displays a unit next to an input field.
 
 | Prop | Type   | Required | Description                       |
 | ---- | ------ | -------- | --------------------------------- |
-| unit | string | ✅       | Unit text (e.g., "원", "kg", "%") |
+| unit | string | ✅       | Unit text (e.g. "USD", "kg", "%") |
 
 ### FormKit.Error
 
-Displays validation error messages.
+Displays a validation error message.
 
 | Prop  | Type       | Required | Description                       |
 | ----- | ---------- | -------- | --------------------------------- |
@@ -340,38 +372,40 @@ Displays validation error messages.
 
 ## 🎨 Styling
 
-FormKit uses Tailwind CSS with CSS variables for theming. Add these variables to your CSS:
+### Changing Colors
+
+The default theme reads your app's CSS variables first and falls back to its own defaults only when they are missing. Define any of the variables below on `:root` and they apply as-is. Use complete color values (`oklch(...)`, `hsl(...)`, `#hex`).
 
 ```css
 :root {
-  --border: 214.3 31.8% 91.4%;
-  --input: 214.3 31.8% 91.4%;
-  --ring: 222.2 84% 4.9%;
-  --background: 0 0% 100%;
-  --foreground: 222.2 84% 4.9%;
-  --primary: 222.2 47.4% 11.2%;
-  --primary-foreground: 210 40% 98%;
-  --secondary: 210 40% 96.1%;
-  --secondary-foreground: 222.2 47.4% 11.2%;
-  --destructive: 0 84.2% 60.2%;
-  --destructive-foreground: 210 40% 98%;
-  --muted: 210 40% 96.1%;
-  --muted-foreground: 215.4 16.3% 46.9%;
-  --accent: 210 40% 96.1%;
-  --accent-foreground: 222.2 47.4% 11.2%;
-  --popover: 0 0% 100%;
-  --popover-foreground: 222.2 84% 4.9%;
-}
-
-.dark {
-  --border: 217.2 32.6% 17.5%;
-  --input: 217.2 32.6% 17.5%;
-  --ring: 212.7 26.8% 83.9%;
-  --background: 222.2 84% 4.9%;
-  --foreground: 210 40% 98%;
-  /* ... other dark mode variables */
+  --primary: oklch(0.53 0.15 215); /* accent: default button, focus ring, required mark */
+  --primary-foreground: oklch(0.99 0 0); /* text on the accent color */
+  --background: oklch(1 0 0); /* focused input background */
+  --foreground: oklch(0.24 0.015 270); /* body text */
+  --muted-foreground: oklch(0.52 0.012 270); /* hints and placeholders */
+  --input: oklch(0.9 0.006 270); /* borders */
+  --destructive: oklch(0.55 0.2 25); /* errors */
 }
 ```
+
+Corner radius and control height are set with `--fk-` variables.
+
+```css
+:root {
+  --fk-radius: 0.625rem;
+  --fk-control-height: 2.75rem;
+}
+```
+
+### Overriding with Classes
+
+Components pass `className` straight through, and the default look lives only inside `@layer formkit`. Rules in a layer always lose to unlayered rules and framework utilities, so the classes you pass win over the defaults regardless of their name or specificity.
+
+```tsx
+<FormKit.Input name="email" className="rounded-none border-2 border-black" />
+```
+
+Plain CSS classes work the same way in apps that don't use Tailwind.
 
 ## 🧪 Testing
 
@@ -399,10 +433,6 @@ test('submits form data', async () => {
 })
 ```
 
-## 🤝 Contributing
-
-Contributions are welcome! Please read our [Contributing Guide](CONTRIBUTING.md) for details.
-
 ## 📄 License
 
 MIT © [Jiin Seok]
@@ -411,4 +441,4 @@ MIT © [Jiin Seok]
 
 - [Documentation](https://github.com/JiinSeok/formkit-react)
 - [Examples](https://github.com/JiinSeok/formkit-react/tree/main/examples)
-- [Report Issues](https://github.com/JiinSeok/formkit-react/issues)
+- [Report an Issue](https://github.com/JiinSeok/formkit-react/issues)

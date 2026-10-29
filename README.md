@@ -31,10 +31,10 @@ pnpm add @jiin.seok/formkit-react
 ### Peer Dependencies
 
 ```bash
-npm install react react-dom
+npm install react react-dom zod
 ```
 
-> `react-hook-form`, `zod`, `@hookform/resolvers` 등은 패키지 의존성으로 자동 설치됩니다.
+> `react-hook-form`, `@hookform/resolvers`는 패키지 의존성으로 자동 설치됩니다. `zod`는 앱의 schema와 FormKit이 같은 zod를 쓰도록 peer dependency로 둡니다.
 
 ### 스타일 불러오기
 
