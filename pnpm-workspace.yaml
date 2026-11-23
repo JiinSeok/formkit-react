@@ -3,3 +3,7 @@ allowBuilds:
   esbuild: false
   # jiin: lightningcss-cli는 postinstall에서 플랫폼별 실행 파일을 bin 자리에 연결한다
   lightningcss-cli: true
+
+overrides:
+  # GHSA-g3hv-75wg-m249: 플러그인이 minimatch 11을 지원하면 이 설정을 제거한다.
+  '@trivago/prettier-plugin-sort-imports>minimatch': ^11.0.9
