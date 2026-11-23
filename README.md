@@ -31,10 +31,10 @@ pnpm add @jiin.seok/formkit-react
 ### Peer Dependencies
 
 ```bash
-npm install react react-dom zod
+npm install react react-dom 'zod@^4.6.6'
 ```
 
-> `react-hook-form`, `@hookform/resolvers`는 패키지 의존성으로 자동 설치됩니다. `zod`는 앱의 schema와 FormKit이 같은 zod를 쓰도록 peer dependency로 둡니다.
+> `react-hook-form`, `@hookform/resolvers`는 패키지 의존성으로 자동 설치됩니다. FormKit은 앱과 같은 Zod를 사용하며, Zod 4.6.6 이상의 4.x 버전이 필요합니다.
 
 ### 스타일 불러오기
 

@@ -31,10 +31,10 @@ pnpm add @jiin.seok/formkit-react
 ### Peer Dependencies
 
 ```bash
-npm install react react-dom zod
+npm install react react-dom 'zod@^4.6.6'
 ```
 
-> `react-hook-form` and `@hookform/resolvers` are installed automatically as package dependencies. `zod` is a peer dependency so that FormKit shares the same Zod instance as your schemas.
+> `react-hook-form` and `@hookform/resolvers` are installed automatically as package dependencies. FormKit shares your app's Zod instance and requires Zod 4.6.6 or later within the 4.x series.
 
 ### Import Styles
 
